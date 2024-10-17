@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, media, gps, map, photography, photo, gutenberg
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 5.2.2
+Stable tag: 5.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,12 +54,18 @@ Please have a look at [Meow Lightbox](https://meowapps.com/meow-lightbox/).
 
 == Changelog ==
 
+= 5.2.3 (2024/10/17) =
+* Add: Added a RTF Fix option for the Default Engine.
+* Update: Enhanced the code architecture.
+* Fix: Photoswipe display.
+* Fix: Prevent useless events.
+* ✨ If you have a moment, please write a little [review for the Meow Lightbox](https://wordpress.org/support/plugin/meow-lightbox/reviews/?rate=5#new-post). Thank you! 💕
+
 = 5.2.2 (2024/09/19) =
 * Add: Photoswipe support, with compatibility with all the features of the Meow Lightbox.
 * Add: New Lightbox Engine option, which let you choose between the default engine and PhotoSwipe.
 * Fix: Zoom to Full Resolution.
 * Fix: Minor fixes.
-* ✨ If you have a moment, please write a little [review for the Meow Lightbox](https://wordpress.org/support/plugin/meow-lightbox/reviews/?rate=5#new-post). Thank you! 💕
 
 = 5.2.1 (2024/06/28) =
 * Update: Optimized the loading and libs loading.

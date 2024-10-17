@@ -127,6 +127,7 @@ class Meow_MWL_Core {
 			array(
 				'plugin_url' => plugin_dir_url(__FILE__),
 				'settings' => array(
+					'rtf_slider_fix' => $this->get_option( 'rtf_slider_fix', false ),
 					'engine' => $this->get_option( 'engine', 'default' ),
 					'backdrop_opacity' => $this->get_option( 'backdrop_opacity', 85 ),
 					'theme' => $this->get_option( 'theme', 'dark' ),

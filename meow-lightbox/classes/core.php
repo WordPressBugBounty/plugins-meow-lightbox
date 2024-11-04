@@ -771,6 +771,7 @@ class Meow_MWL_Core {
 			'map_engine' => 'googlemaps',
 			'googlemaps_token' => '',
 			'googlemaps_style' => '[]',
+			'googlemaps_map_type' => 'satellite',
 			'mapbox_token' => '',
 			'mapbox_style' => '{"username":"", "style_id":""}',
 			'maptiler_token' => '',

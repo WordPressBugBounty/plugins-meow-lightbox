@@ -17,7 +17,7 @@ class Meow_MWL_Core {
 	private $option_name = 'mwl_options';
 	private $map = null;
 
-
+	private $image_attributes = [ 'data-mwl-img-id', 'data-envira-item-id'];
 
 	public function __construct() {
 		MeowCommon_Helpers::is_rest() && new Meow_MWL_Rest( $this );
@@ -125,6 +125,8 @@ class Meow_MWL_Core {
 
 		wp_localize_script( 'mwl-build-js', 'mwl_settings',
 			array(
+				'api_url' => get_rest_url( null, '/meow-lightbox/v1/' ),
+				'rest_nonce' => wp_create_nonce( 'wp_rest' ),
 				'plugin_url' => plugin_dir_url(__FILE__),
 				'settings' => array(
 					'rtf_slider_fix' => $this->get_option( 'rtf_slider_fix', false ),
@@ -229,7 +231,7 @@ class Meow_MWL_Core {
 		$meta = wp_get_attachment_metadata( $id );
 
 		if ( empty( $meta ) || empty( $p )  ) {
-			$message = "No meta was found for this ID.";
+			$message = "No meta was found for this ID...";
 		}
 
 		if ( $message ) {
@@ -277,17 +279,23 @@ class Meow_MWL_Core {
 		$title = isset( $p->post_title ) ? $p->post_title : "";
 		$caption =  isset( $p->post_excerpt ) ? $p->post_excerpt : "";
 		$description = isset( $p->post_content ) ? $p->post_content : "";
+		$dl = null;
 		$file = null;
 		$file_srcset = null;
 		$file_sizes = null;
+
 		if ( $this->imageSize === 'srcset' ) {
 			$file = wp_get_attachment_url( $id );
+
 			$file_srcset = wp_get_attachment_image_srcset( $id, 'full' );
 			$file_sizes = wp_get_attachment_image_sizes( $id, 'full' );
+			$dl = wp_get_attachment_image_url( $id, 'full' );
 		}
 		else {
-			$arr = wp_get_attachment_image_src( $id, $this->imageSize );;
+			$arr = wp_get_attachment_image_src( $id, $this->imageSize );
+
 			$file = $arr[0];
+			$dl = $arr[0];
 		}
 
 		// Initialize metadata with an empty string if it does not exist.
@@ -364,12 +372,11 @@ class Meow_MWL_Core {
 			$filters = new Meow_MWL_Filters();
 		}
 
-		// Prepare the download link based on the big image option
+		// Prepare the download link and the file based on the big image option
 		$big_image = $this->get_option( 'wordpress_big_image', false );
 		if ( $big_image && function_exists( 'wp_get_original_image_url' ) ) {
 			$dl = wp_get_original_image_url( $id );
-		} else {
-			$dl = wp_get_attachment_url( $id );
+			$file = wp_get_original_image_url( $id );
 		}
 
 		$info = array(
@@ -482,6 +489,23 @@ class Meow_MWL_Core {
 		return $attr;
 	}
 
+
+	/**
+	 * 	* How it works:
+	 * 	The images needs to have the data-mwl-img-id attribute so we can link them to the mwl_data.
+	 * 	This will also make sure we get the EXIF for the detected IDs ( to write the mwl_data ).
+	 * 
+	 *  The goal here is to find the media ID from the DOM element.
+	 *      We first check if the element has a class with the ID.
+	 * 	    Then we check if the element has an attribute with the ID. ( This can be done by other plugins, so we can add these attributes in $this->image_attributes )
+ 	 * 	    If not, we try to resolve the ID from the URL ( aggressive_resolve option ).
+
+	 * Once we have the ID we can write data-mwl-img-id in the element. Then in the front we can link the element to the mwl_data.
+	 * 
+	 * @param $element
+	 * @param $buffer
+	 * 
+	 */
 	function lightboxify_element( $element, $buffer ) {
 		$mediaId = null;
 		$classes = '';
@@ -537,6 +561,22 @@ class Meow_MWL_Core {
 			if ( !empty( $url ) ) {
 				if ( $this->get_option( 'agressive_resolve' ) ) {
 					$mediaId = $this->resolve_image_id( $url );
+				}
+			}
+		}
+
+		if ( !$mediaId ) {
+			// Check if we can get the ID from the attributes
+			$attributes = apply_filters( 'mwl_image_attributes', $this->image_attributes );
+			foreach ( $attributes as $attribute ) {
+				if ( $this->parsingEngine === 'HtmlDomParser' ) {
+					$mediaId = $element->{$attribute};
+				}
+				else {
+					$mediaId = $element->attr( $attribute );
+				}
+				if ( $mediaId ) {
+					break;
 				}
 			}
 		}
@@ -675,11 +715,12 @@ class Meow_MWL_Core {
 	public function mgl_force_rewrite_mwl_data( $images_ids ) {
 		$images_ids = array_map( 'intval', $images_ids );
 		$this->images = array_merge( $this->images, $images_ids );
+
 		return $this->get_mwl_data();
 	}
 
 	function get_mwl_data() {
-		$images_info = [];
+		$images_info = [];	
 		foreach ( $this->images as $image ) {
 			$images_info[$image] = $this->get_exif_info( $image );
 		}
@@ -698,6 +739,9 @@ class Meow_MWL_Core {
 			echo $html;
 		}
 	}
+
+
+
 
 	function wp_footer() {
 		$this->write_mwl_data();

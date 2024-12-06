@@ -52,7 +52,41 @@ class Meow_MWL_Rest
 			'permission_callback' => array( $this->core, 'can_access_features' ),
 			'callback' => array( $this, 'rest_clear_logs' )
 		) );
+
+		register_rest_route( $this->namespace, '/regenerate_mwl_data', array(
+			'methods' => 'POST',
+			'permission_callback' => "__return_true",
+			'callback' => array( $this, 'rest_regenerate_mwl_data' )
+		) );
   }
+
+
+  	function rest_regenerate_mwl_data( $request ) {
+
+		$images = $request->get_param( 'images' );
+
+		$data = [];
+
+		foreach( $images as $image ) {
+
+
+				$id = attachment_url_to_postid( $image['url'] );
+				if ( $id ) {
+
+					$res =  $this->core->get_exif_info( $id );
+
+					$data[] = [
+						'url' => $image['url'],
+						'id' => $id,
+						'data' => $res
+					];
+				}
+		}
+
+
+		return new WP_REST_Response( [ 'success' => true, 'data' => $data ], 200 );
+	}
+
 
 	function rest_get_logs() {
 		$logs = $this->core->get_logs();

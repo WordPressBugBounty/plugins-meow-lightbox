@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, media, gps, map, photography, photo, gutenberg
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 5.2.4
+Stable tag: 5.2.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,12 @@ Replace all the files. Nothing else to do.
 Please have a look at [Meow Lightbox](https://meowapps.com/meow-lightbox/).
 
 == Changelog ==
+
+= 5.2.5 (2024/12/06) =
+* Change: Scaling logic moved to the server-side.
+* Fix: Compatibity with Envira Galleries (and more, via mwl_image_attributes).
+* Fix: Error "Could Not Update Options".
+* Add: addToMeowLightboxQueue to dynamically add images with their metadata to the lightbox.
 
 = 5.2.4 (2024/11/04) =
 * Add: Google Maps settings for Map Types.

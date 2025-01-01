@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, media, gps, map, photography, photo, gutenberg
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 5.2.5
+Stable tag: 5.2.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,13 @@ Replace all the files. Nothing else to do.
 Please have a look at [Meow Lightbox](https://meowapps.com/meow-lightbox/).
 
 == Changelog ==
+
+= 5.2.6 (2025/01/01) =
+* Fix: Hide EXIFs data if none should be displayed.
+* Fix: PhotoSwipe Map scales the same way as the Default Engine.
+* Fix: Hide the captions on map view for PhotoSwipe.
+* Update: Reorganized EXIFs to have Lens and Camera together.
+* Fix: Remove Camera Name from Lens to avoid seeing it twice.
 
 = 5.2.5 (2024/12/06) =
 * Change: Scaling logic moved to the server-side.

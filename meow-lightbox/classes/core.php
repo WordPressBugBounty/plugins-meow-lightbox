@@ -154,9 +154,9 @@ class Meow_MWL_Core {
 						'title' => $this->get_option( 'exif_title', true ),
 						'caption' => $this->get_option( 'exif_caption', true ),
 						'camera' => $this->get_option( 'exif_camera', true ),
+						'lens' => $this->get_option( 'exif_lens', false ),
 						'date' => $this->get_option( 'exif_date', false ),
 						'date_timezone' => $this->get_option( 'exif_date_timezone', false ),
-						'lens' => $this->get_option( 'exif_lens', false ),
 						'shutter_speed' => $this->get_option( 'exif_shutter_speed', true ),
 						'aperture' => $this->get_option( 'exif_aperture', true ),
 						'focal_length' => $this->get_option( 'exif_focal_length', true ),
@@ -379,6 +379,12 @@ class Meow_MWL_Core {
 			$file = wp_get_original_image_url( $id );
 		}
 
+
+		// Remove the camera from the lens if it is there, so it doesn't show twice
+		$camera = $meta['image_meta']['camera'];
+		$lense  = $displayLens ? $meta['image_meta']['lens'] : '';
+		$lense  = str_replace( $camera, '', $lense );
+
 		$info = array(
 			'success' => true,
 			'file' => $file,
@@ -396,9 +402,9 @@ class Meow_MWL_Core {
 				'description' => apply_filters( 'mwl_img_description', $description, $id, $meta ),
 				'gps' => apply_filters( 'mwl_img_gps', $meta['image_meta']['geo_coordinates'],	$id, $meta ),
 				'copyright' => apply_filters( 'mwl_img_copyright', $meta['image_meta']['copyright'], $id, $meta ),
-				'camera' => apply_filters( 'mwl_img_camera',  $meta['image_meta']['camera'], $id, $meta ),
+				'camera' => apply_filters( 'mwl_img_camera',  $camera, $id, $meta ),
 				'date' => apply_filters( 'mwl_img_date', $date, $id, $meta ),
-				'lens' => apply_filters( 'mwl_img_lens', $displayLens ? $meta['image_meta']['lens'] : '', $id, $meta ),
+				'lens' => apply_filters( 'mwl_img_lens', $lense, $id, $meta ),
 				'aperture' => apply_filters( 'mwl_img_aperture', $meta['image_meta']['aperture'], $id, $meta ),
 				'focal_length' => apply_filters( 'mwl_img_focal_length', $meta['image_meta']['focal_length'], $id, $meta ),
 				'iso' => apply_filters( 'mwl_img_iso', $meta['image_meta']['iso'], $id, $meta ),

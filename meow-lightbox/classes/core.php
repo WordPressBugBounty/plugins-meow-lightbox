@@ -137,7 +137,12 @@ class Meow_MWL_Core {
 					'selector' => $this->get_option( 'selector', '.entry-content, .gallery, .mgl-gallery, .wp-block-gallery,  .wp-block-image' ),
 					'selector_ahead' => $this->get_option( 'selector_ahead', false ),
 					'deep_linking' => $this->get_option( 'deep_linking', false ),
+
 					'social_sharing' => $this->get_option( 'social_sharing', false ),
+					'social_sharing_facebook' => $this->get_option( 'social_sharing_facebook', true ),
+					'social_sharing_twitter' => $this->get_option( 'social_sharing_twitter', true ),
+					'social_sharing_pinterest' => $this->get_option( 'social_sharing_pinterest', true ),
+
 					'separate_galleries' => $this->get_option( 'separate_galleries', false ),
 					'animation_toggle' => $this->get_option( 'animation_toggle', 'none' ),
 					'animation_speed' => $this->get_option( 'animation_speed', 'normal' ),
@@ -223,9 +228,7 @@ class Meow_MWL_Core {
 		}
 		
 		$message = null;
-		if ( !wp_attachment_is_image( $id ) ){
-			$message = "This attachment does not exist or is not an image.";
-		}
+		
 
 		$p = get_post( $id );
 		$meta = wp_get_attachment_metadata( $id );
@@ -233,6 +236,14 @@ class Meow_MWL_Core {
 		if ( empty( $meta ) || empty( $p )  ) {
 			$message = "No meta was found for this ID...";
 		}
+
+		$is_video = strpos( $meta['mime_type'], 'video' ) !== false;
+
+		if ( !wp_attachment_is_image( $id ) && !$is_video ) {
+
+			$message = "This attachment does not exist, is not an image, or is not a video.";
+		}
+
 
 		if ( $message ) {
 			return array(
@@ -515,70 +526,98 @@ class Meow_MWL_Core {
 	function lightboxify_element( $element, $buffer ) {
 		$mediaId = null;
 		$classes = '';
-		$from = substr( $element, 0 );
-
+		// Capture the original HTML string for this element.
+		$from = (string) $element;
+	
+		// Retrieve the anti-selectors and trim off any leading dots.
 		$anti_selectors = $this->get_option( 'anti_selector', '.blog, .archive, .emoji, .attachment-post-image, .no-lightbox' );
 		$anti_selectors = array_map( function( $selector ) {
 			return ltrim( $selector, '.' );
 		}, preg_split( '/[\s,]+/', $anti_selectors ) );
-
-		// Get the classes
+	
+		// Get the classes from the element.
 		if ( $this->parsingEngine === 'HtmlDomParser' ) {
 			$classes = $element->class;
-		}
-		else {
+		} else {
 			$classes = $element->attr('class');
 		}
-
-		// Check if classes contain an anti-selector
-		if( $classes ) {
+	
+		// Check if any anti-selector is present in the classes.
+		if ( $classes ) {
 			foreach ( $anti_selectors as $anti_selector ) {
 				if ( strpos( $classes, $anti_selector ) !== false ) {
 					return $this->renderingMode === 'replace' ? false : $buffer;
 				}
 			}
 		}
-
-		if ( is_string( $classes ) && preg_match( '/wp-image-([0-9]{1,10})/i', $classes, $matches ) ) {
-			// The wp-image-xxx class exists, let's use it.
-			$mediaId = $matches[1];
+	
+		// Check for a WordPress media ID in the classes.
+		if ( is_string( $classes ) ) {
+			error_log( 'classes: ' . $classes );
+			if ( preg_match( '/wp-image-([0-9]{1,10})/i', $classes, $matches ) ) {
+				$mediaId = $matches[1];
+			}
+			// Added check for video class ( we add this through the Meow Gallery plugin )
+			elseif ( preg_match( '/wp-video-([0-9]{1,10})/i', $classes, $matches ) ) {
+				$mediaId = $matches[1];
+			}
 		}
-		else {
-			// Otherwise, resolve the ID from the URL.
+	
+		// If no mediaId was found via classes, resolve it from the element’s URL.
+		if ( !$mediaId ) {
 			$src = null;
 			$mglSrc = null;
 			$url = null;
+			$tag = '';
+	
+			// Get the tag name and the src attributes based on the parsing engine.
 			if ( $this->parsingEngine === 'HtmlDomParser' ) {
+				$tag = $element->tag;
 				$src = $element->src;
 				$mglSrc = $element->{'mgl-src'};
-			}
-			else {
+			} else {
+				$tag = $element->tag();
 				$src = $element->attr('src');
 				$mglSrc = $element->attr('mgl-src');
 			}
-
-			// Look for the url and its mediaId.
+	
+			// For video elements, if the src attribute is empty, check for a <source> tag.
+			if ( $tag === 'video' && empty( $src ) ) {
+				$sourceElements = $element->find('source');
+				if ( !empty( $sourceElements) ) {
+					if ( $this->parsingEngine === 'HtmlDomParser' ) {
+						$src = $sourceElements[0]->src;
+					} else {
+						$src = $sourceElements[0]->attr('src');
+					}
+				}
+			}
+	
+			// Decide which URL to use.
 			if ( $this->isInfinite ) {
 				$url = $mglSrc;
 			}
 			if ( empty( $url ) ) {
 				$url = $src;
 			}
+	
+			// If a URL was found, try to resolve a media ID.
 			if ( !empty( $url ) ) {
 				if ( $this->get_option( 'agressive_resolve' ) ) {
+					// This is the same for both images and videos.
 					$mediaId = $this->resolve_image_id( $url );
+
 				}
 			}
 		}
-
+	
+		// If still no mediaId, try to extract it from other element attributes.
 		if ( !$mediaId ) {
-			// Check if we can get the ID from the attributes
 			$attributes = apply_filters( 'mwl_image_attributes', $this->image_attributes );
 			foreach ( $attributes as $attribute ) {
 				if ( $this->parsingEngine === 'HtmlDomParser' ) {
 					$mediaId = $element->{$attribute};
-				}
-				else {
+				} else {
 					$mediaId = $element->attr( $attribute );
 				}
 				if ( $mediaId ) {
@@ -586,35 +625,46 @@ class Meow_MWL_Core {
 				}
 			}
 		}
-
+	
+		// If a mediaId was found, add it to the element.
 		if ( $mediaId ) {
-			// If the mediaId exists, let's add it to the DOM.
-			if ( $this->parsingEngine === 'HtmlDomParser' ) {
-				$element->{'data-mwl-img-id'} = $mediaId;
+
+			if ( isset( $tag ) && $tag === 'video' ) {
+				if ( $this->parsingEngine === 'HtmlDomParser' ) {
+					$element->{'data-mwl-video-id'} = $mediaId;
+				} else {
+					$element->attr( 'data-mwl-video-id', $mediaId );
+				}
+			} else {
+				if ( $this->parsingEngine === 'HtmlDomParser' ) {
+					$element->{'data-mwl-img-id'} = $mediaId;
+				} else {
+					$element->attr( 'data-mwl-img-id', $mediaId );
+				}
 			}
-			else {
-				$element->attr( 'data-mwl-img-id', $mediaId );
-			}
+	
+			// Add the mediaId to the images array
 			if ( !in_array( $mediaId, $this->images ) ) {
 				array_push( $this->images, $mediaId );
 			}
-
-			if( !$this->isEnqueued )
-			{
-				$this->log( '⚡ The scripts were enqueued because the lightbox detected an image.' );
+	
+			if ( !$this->isEnqueued ) {
+				$this->log( '⚡ The scripts were enqueued because the lightbox detected a media element.' );
 				do_action( 'mwl_lightbox_added', $mediaId );
 			}
 			
-			
-			return $this->renderingMode === 'replace' ? str_replace( trim( $from, "</> "), trim( $element, "</> " ), $buffer ) : 1;
+			return $this->renderingMode === 'replace'
+				? str_replace( trim( $from, "</> " ), trim( $element, "</> " ), $buffer )
+				: 1;
 		}
+		
 		return $this->renderingMode === 'replace' ? false : $buffer;
 	}
 
 	function lightboxify( $buffer ) {
 		if ( !isset( $buffer ) || trim( $buffer ) === '' )
 			return $buffer;
-
+	
 		// Initialize engine
 		$html = null;
 		$hasChanges = false;
@@ -622,7 +672,7 @@ class Meow_MWL_Core {
 			$html = new HtmlDomParser();
 			$html = $html->str_get_html( $buffer, true, true, DEFAULT_TARGET_CHARSET, false );
 		}
-
+	
 		if( !$html ){
 			$this->log( '⚠️ HtmlDomParser wasn\'t used. Trying DiDom.' );
 			$html = new Document();
@@ -636,22 +686,22 @@ class Meow_MWL_Core {
 			$this->log( '🪲 the DOM is empty.' );
 			return $buffer;
 		}
-
-
+	
 		$selector_ahead = $this->get_option( 'selector_ahead', false );
 		if ( $selector_ahead ) {
-
+	
 			$classes = $this->get_option( 'selector', '.entry-content, .gallery, .mgl-gallery, .wp-block-gallery' );
 			$classes = explode( ',', $classes );
-
+	
 			if ( empty( $classes ) ) {
 				$this->log( '🪲 No classes were found in the ahead selector.' );
 			}
 		
 			foreach ( $classes as $class ) {
-
-				$class = trim($class);
-				$elements = $html->find("$class img, $class > img");
+	
+				$class = trim( $class );
+				// Include both img and video elements (and direct child selectors)
+				$elements = $html->find("$class img, $class > img, $class video, $class > video");
 				
 				if ( empty( $elements ) ) {
 					$this->log( '🪲 No elements were found in the ahead selector for the class: ' . $class );
@@ -669,8 +719,9 @@ class Meow_MWL_Core {
 				}
 			}
 		} else {
-			$images = $html->find( 'img' );
-			foreach ( $images as $element ) {
+			// Find both img and video elements in the DOM
+			$elements = $html->find( 'img, video' );
+			foreach ( $elements as $element ) {
 				if ( $this->renderingMode === 'replace' ) {
 					$buffer = $this->lightboxify_element( $element, $buffer );
 				}
@@ -679,24 +730,24 @@ class Meow_MWL_Core {
 				}
 			}
 		}
-
+	
 		if ( $this->isObMode ) {
 			$matches = preg_split('/(<body.*?>)/i', $html, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-
+	
 			// If the body tag is not found, we can't do anything.
 			if ( count( $matches ) < 2 ) {
 				$this->log( '⚠️ Output Buffering was used on a non HTML response. Returning the current buffer.' );
 				return $buffer;
 			}
-
+	
 			$mwlData = $this->write_mwl_data( true );
-
+	
 			$head = isset( $matches[0] ) ? $matches[0] : '';
 			$body = isset( $matches[1] ) ? $matches[1] : '';
 			$footer = isset( $matches[2] ) ? $matches[2] : '';
 			$html = $head . $body . $mwlData . $footer;
 		}
-
+	
 		if ( $this->renderingMode === 'replace' ) {
 			return $buffer;
 		}
@@ -808,7 +859,12 @@ class Meow_MWL_Core {
 			'caption_ellipsis' => true,
 			'magnification' => true,
 			'right_click' => false,
+			
 			'social_sharing' => false,
+			'social_sharing_facebook' => true,
+			'social_sharing_twitter' => true,
+			'social_sharing_pinterest' => true,
+
 			'separate_galleries' => false,
 			'animation_toggle' => 'none',
 			'animation_speed' => 'normal',

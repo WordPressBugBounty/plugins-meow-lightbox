@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, media, gps, map, photography, photo, gutenberg
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 5.2.6
+Stable tag: 5.2.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,6 +54,14 @@ Please have a look at [Meow Lightbox](https://meowapps.com/meow-lightbox/).
 
 == Changelog ==
 
+= 5.2.7 (2025/02/17) =
+* Add: Added support for videos in the Default Engine for better media compatibility.
+* Fix: Prevented the Default Engine from closing when clicking on a map.
+* Update: Improved PhotoSwipe by allowing captions to be shown or hidden when zooming in/out.
+* Add: Implemented anti-selector filtering in PhotoSwipe data for better customization.
+* Update: Refactored social sharing to use dynamic settings for more flexibility.
+* ✨ If you have a moment, please write a little [review for the Meow Lightbox](https://wordpress.org/support/plugin/meow-lightbox/reviews/?rate=5#new-post). Thank you! 💕
+
 = 5.2.6 (2025/01/01) =
 * Fix: Hide EXIFs data if none should be displayed.
 * Fix: PhotoSwipe Map scales the same way as the Default Engine.
@@ -70,7 +78,6 @@ Please have a look at [Meow Lightbox](https://meowapps.com/meow-lightbox/).
 = 5.2.4 (2024/11/04) =
 * Add: Google Maps settings for Map Types.
 * Fix: PhotoSwipe Location without GPS data.
-* ✨ If you have a moment, please write a little [review for the Meow Lightbox](https://wordpress.org/support/plugin/meow-lightbox/reviews/?rate=5#new-post). Thank you! 💕
 
 = 5.2.3 (2024/10/17) =
 * Add: Added a RTF Fix option for the Default Engine.

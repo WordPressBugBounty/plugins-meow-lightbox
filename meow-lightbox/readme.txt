@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, media, gps, map, photography, photo, gutenberg
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 5.2.7
+Stable tag: 5.2.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,16 @@ Replace all the files. Nothing else to do.
 Please have a look at [Meow Lightbox](https://meowapps.com/meow-lightbox/).
 
 == Changelog ==
+
+= 5.2.8 (2025/03/12) =
+* Update: Improved MIME type detection for better media compatibility.
+* Fix: Resolved a warning related to MIME type handling.
+* Add: Added logging for media ID resolution and DOM element detection for debugging.
+* Update: Adjusted launch configuration for Xdebug to improve development workflow.
+* Fix: Corrected tag retrieval for the DiDom parsing engine in the core class.
+* Update: Refactored PhotoSwipe captions to render properly instead of using plain strings, matching Default behavior.
+* Update: Enhanced captions with scrolling, improved layout, and better visibility.
+* Update: Removed unnecessary error logs for a cleaner experience.
 
 = 5.2.7 (2025/02/17) =
 * Add: Added support for videos in the Default Engine for better media compatibility.

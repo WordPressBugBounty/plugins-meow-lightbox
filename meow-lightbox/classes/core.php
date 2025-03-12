@@ -228,24 +228,36 @@ class Meow_MWL_Core {
 		}
 		
 		$message = null;
-		
 
 		$p = get_post( $id );
-		$meta = wp_get_attachment_metadata( $id );
-
-		if ( empty( $meta ) || empty( $p )  ) {
-			$message = "No meta was found for this ID...";
+		if ( empty( $p ) ) {
+			$message = "This attachment does not exist.";
+			return array(
+				'success' => false,
+				'message' => $message
+			);
 		}
 
-		$is_video = strpos( $meta['mime_type'], 'video' ) !== false;
+		$meta = wp_get_attachment_metadata( $id );
+		if ( empty( $meta ) || $meta === false ) {
+			$message = "No meta was found for this ID.";
+			return array(
+				'success' => false,
+				'message' => $message
+			);
+		}
 
-		if ( !wp_attachment_is_image( $id ) && !$is_video ) {
+		if ( !array_key_exists( 'mime_type', $meta ) ) {
+			$meta['mime_type'] = '';
+		}
+		$mime_type = $meta['mime_type'];
+
+		$is_video = wp_attachment_is( 'video', $p ) || strpos( $mime_type, 'video' ) !== false;
+		$is_image = wp_attachment_is_image( $p );
+
+		if ( !$is_image && !$is_video ) {
 
 			$message = "This attachment does not exist, is not an image, or is not a video.";
-		}
-
-
-		if ( $message ) {
 			return array(
 				'success' => false,
 				'message' => $message
@@ -553,7 +565,7 @@ class Meow_MWL_Core {
 	
 		// Check for a WordPress media ID in the classes.
 		if ( is_string( $classes ) ) {
-			error_log( 'classes: ' . $classes );
+
 			if ( preg_match( '/wp-image-([0-9]{1,10})/i', $classes, $matches ) ) {
 				$mediaId = $matches[1];
 			}
@@ -575,8 +587,8 @@ class Meow_MWL_Core {
 				$tag = $element->tag;
 				$src = $element->src;
 				$mglSrc = $element->{'mgl-src'};
-			} else {
-				$tag = $element->tag();
+			} else if ( $this->parsingEngine === 'DiDom' ) {
+				$tag = $element->tag;
 				$src = $element->attr('src');
 				$mglSrc = $element->attr('mgl-src');
 			}
@@ -607,6 +619,9 @@ class Meow_MWL_Core {
 					// This is the same for both images and videos.
 					$mediaId = $this->resolve_image_id( $url );
 
+				} else {
+					$filename = basename( $url );
+					$this->log( '⚠️ No media ID could be found for ' . $filename . '. Enable the Agressive Resolve to force the ID detection.' );
 				}
 			}
 		}
@@ -721,6 +736,10 @@ class Meow_MWL_Core {
 		} else {
 			// Find both img and video elements in the DOM
 			$elements = $html->find( 'img, video' );
+			$this->log( '🟢 ' . count( $elements ) . ' elements found.' );
+			if ( count( $elements ) === 0 ) {
+				$this->log( '🪲 No elements were found in the DOM.' );
+			}
 			foreach ( $elements as $element ) {
 				if ( $this->renderingMode === 'replace' ) {
 					$buffer = $this->lightboxify_element( $element, $buffer );

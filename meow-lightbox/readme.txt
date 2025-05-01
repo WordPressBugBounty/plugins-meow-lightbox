@@ -2,9 +2,9 @@
 Contributors: TigrouMeow
 Tags: lightbox, responsive, exif, media, gps, map, photography, photo, gutenberg, image, images, gallery, retina
 Requires at least: 6.0
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 5.2.8
+Stable tag: 5.2.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,13 @@ Replace all the files. Nothing else to do.
 Please have a look at [Meow Lightbox](https://meowapps.com/meow-lightbox/).
 
 == Changelog ==
+
+= 5.2.9 (2025/05/01) =
+* Fix: Ensured end_ob function only flushes if output buffering is active to prevent errors.
+* Add: Added internationalization support to allow for translations.
+* Fix: Removed "auto" value from file sizes in image attachment handling for better consistency.
+* Add: Introduced deep linking slug option to customize the URL structure.
+* Update: Dynamically imported PhotoSwipe CSS and added a namespace for the PSWP class to avoid conflicts.
 
 = 5.2.8 (2025/03/12) =
 * Update: Improved MIME type detection for better media compatibility.

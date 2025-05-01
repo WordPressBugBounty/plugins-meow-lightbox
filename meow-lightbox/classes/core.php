@@ -121,7 +121,13 @@ class Meow_MWL_Core {
 		// JS
 		$physical_file = MWL_PATH . '/app/lightbox.js';
     $cache_buster = file_exists( $physical_file ) ? filemtime( $physical_file ) : MWL_VERSION;
-    wp_enqueue_script( 'mwl-build-js', plugins_url( '/app/lightbox.js', __DIR__ ), null, $cache_buster, false );
+    wp_enqueue_script( 
+		'mwl-build-js', 
+		plugins_url( '/app/lightbox.js', __DIR__ ), 
+		array( 'wp-i18n' ),
+		$cache_buster, 
+		false 
+	);
 
 		wp_localize_script( 'mwl-build-js', 'mwl_settings',
 			array(
@@ -137,6 +143,7 @@ class Meow_MWL_Core {
 					'selector' => $this->get_option( 'selector', '.entry-content, .gallery, .mgl-gallery, .wp-block-gallery,  .wp-block-image' ),
 					'selector_ahead' => $this->get_option( 'selector_ahead', false ),
 					'deep_linking' => $this->get_option( 'deep_linking', false ),
+					'deep_linking_slug' => $this->get_option( 'deep_linking_slug', 'mwl' ),
 
 					'social_sharing' => $this->get_option( 'social_sharing', false ),
 					'social_sharing_facebook' => $this->get_option( 'social_sharing_facebook', true ),
@@ -313,6 +320,14 @@ class Meow_MWL_Core {
 			$file_srcset = wp_get_attachment_image_srcset( $id, 'full' );
 			$file_sizes = wp_get_attachment_image_sizes( $id, 'full' );
 			$dl = wp_get_attachment_image_url( $id, 'full' );
+
+			//Remove "auto" from the file_sizes
+			$file_sizes_array = explode( ', ', $file_sizes );
+			$file_sizes_array = array_filter( $file_sizes_array, function( $size ) {
+				return $size !== 'auto';
+			} );
+		
+			$file_sizes = implode( ', ', $file_sizes_array );
 		}
 		else {
 			$arr = wp_get_attachment_image_src( $id, $this->imageSize );
@@ -832,7 +847,9 @@ class Meow_MWL_Core {
 	}
 
 	function end_ob() {
-		@ob_end_flush();
+		if ( ob_get_level() > 0 ) {
+			@ob_end_flush();
+		}
 	}
 
 	/******************************************************************************
@@ -855,6 +872,7 @@ class Meow_MWL_Core {
 			'download_link' => false,
 			'image_size' => 'srcset',
 			'deep_linking' => false,
+			'deep_linking_slug' => 'mwl',
 			'low_res_placeholder' => false,
 			'wordpress_big_image' => false,
 			'agressive_resolve' => false,

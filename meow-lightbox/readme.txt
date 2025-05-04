@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, media, gps, map, photography, photo, gutenberg
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 5.2.9
+Stable tag: 5.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,9 @@ Replace all the files. Nothing else to do.
 Please have a look at [Meow Lightbox](https://meowapps.com/meow-lightbox/).
 
 == Changelog ==
+
+= 5.3.0 (2025/05/04) =
+* Add: Support for keyboard navigation.
 
 = 5.2.9 (2025/05/01) =
 * Fix: Ensured end_ob function only flushes if output buffering is active to prevent errors.

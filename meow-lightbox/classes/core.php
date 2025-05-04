@@ -114,8 +114,8 @@ class Meow_MWL_Core {
     wp_enqueue_style( 'leaflet-css', plugins_url( '/app/style.min.css', __DIR__ ), null, $cache_buster );
 
 		// Touchswipe
-		$physical_file = MWL_PATH . '/app/touchswipe.min.js';
-    $cache_buster = file_exists( $physical_file ) ? filemtime( $physical_file ) : MWL_VERSION;
+		// $physical_file = MWL_PATH . '/app/touchswipe.min.js';
+    // $cache_buster = file_exists( $physical_file ) ? filemtime( $physical_file ) : MWL_VERSION;
     // wp_enqueue_script( 'touchswipe-js', plugins_url( '/app/touchswipe.min.js', __DIR__ ), array('jquery'), $cache_buster, false );
 
 		// JS

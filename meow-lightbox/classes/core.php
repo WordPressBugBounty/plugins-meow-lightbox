@@ -20,38 +20,44 @@ class Meow_MWL_Core {
 	private $image_attributes = [ 'data-mwl-img-id', 'data-envira-item-id'];
 
 	public function __construct() {
-		MeowCommon_Helpers::is_rest() && new Meow_MWL_Rest( $this );
 
+		add_action( 'init', array( $this, 'init' ) );
 		add_filter( 'mgl_force_rewrite_mwl_data', array( $this, 'mgl_force_rewrite_mwl_data' ), 10, 1 );
-
-		$this->isObMode = $this->get_option( 'output_buffering', $this->isObMode );
-
+		add_action( 'edit_attachment', array( $this, 'edit_attachment' ), 10, 1 );
 		if ( class_exists( 'MeowPro_MWL_Core' ) ) {
 			$this->map = new MeowPro_MWL_Core( $this );
 		}
 
-		//$this->parsingEngine = 'HtmlDomParser';
-		add_action( 'edit_attachment', array( $this, 'edit_attachment' ), 10, 1 );
-
 		// The Lightbox should be completely off if the request is asynchronous
+		MeowCommon_Helpers::is_rest() && new Meow_MWL_Rest( $this );
 		$recent_common = method_exists( 'MeowCommon_Helpers', 'is_pagebuilder_request' );
 		if ( MeowCommon_Helpers::is_asynchronous_request() || ( $recent_common && MeowCommon_Helpers::is_pagebuilder_request() ) ) {
 			return;
 		}
 
+		$this->isObMode = $this->get_option( 'output_buffering', $this->isObMode );
 		$this->imageSize = $this->get_option( 'image_size', 'srcset' );
 		$this->disableCache = $this->get_option( 'disable_cache' );
 		$this->isInfinite = $this->get_option( 'infinite', false );
 		$this->parsingEngine = $this->get_option( 'parsing_engine', $this->parsingEngine );
 		$this->renderingMode = $this->isObMode ? 'rewrite' : $this->get_option( 'rendering_mode', $this->renderingMode );
 
-		// Admin
+		if ( !is_admin() ) {
+			$this->construct_client();
+		}
+
+	}
+
+	public function init() {
 		if ( is_admin() ) {
 			load_plugin_textdomain( MWL_DOMAIN, false, MWL_PATH . '/languages' );
-			new Meow_MWL_Admin( $this );
 		}
-		// Client
-		else if ( !MeowCommon_Helpers::is_rest() ) {
+
+		new Meow_MWL_Admin( $this );
+	}
+
+	public function construct_client(){
+		if ( !MeowCommon_Helpers::is_rest() ) {
 			new Meow_MWL_Filters();
 			add_action( 'mwl_lightbox_added', array( $this, 'lightbox_added' ), 10, 1 );
 
@@ -83,6 +89,7 @@ class Meow_MWL_Core {
 				add_filter( 'the_content', array( $this, 'lightboxify' ), 20 );
 				add_action( 'wp_footer', array( $this, 'wp_footer' ), 100 );
 			}
+
 			// All Mode: Need to handle the Meow Gallery (which is JS only)
 			add_action( 'mgl_gallery_created', array( $this, 'meow_gallery_created' ), 10, 3 );
 			add_action( 'mgl_collection_created', array( $this, 'meow_gallery_created' ), 10, 3 );
@@ -354,36 +361,6 @@ class Meow_MWL_Core {
 				$meta['image_meta'][$image_meta_key] = '';
 		}
 
-		// The way the date was calculated before November 2nd
-		// $previous_version_date = "";
-		// if ( isset( $meta['image_meta']['created_timestamp'] ) && $meta['image_meta']['created_timestamp'] != 0 ) {
-		// 	$timestamp	= $meta['image_meta']['created_timestamp'];
-
-		// 	$using_timezone = $this->get_option( 'exif_date_timezone', false );
-		// 	if ( $using_timezone ) {
-		// 		$timezone = wp_timezone_string();
-			
-		// 		try {
-		// 			$timestamp = $meta['image_meta']['created_timestamp'] + (int)substr( $timezone, 0, 3 ) * 3600;
-		// 		}
-		// 		catch (Exception $e) {
-		// 			error_log( 'Meow Lightbox: Couldn\'t use WordPress Timezone. ' . $e->getMessage() );
-		// 		}
-		// 	}
-			
-		// 	$date_format = get_option( 'date_format' ) . ' - ' . get_option( 'time_format' );
-
-		// 	// Make sure $timestamp is of type int
-		// 	try {
-		// 		$timestamp = (int)$timestamp;
-		// 		$previous_version_date = date( $date_format, $timestamp );
-		// 	}
-		// 	catch (Exception $e) {
-		// 		$timestamp_type = gettype( $timestamp );
-		// 		error_log( "Meow Lightbox: Couldn't convert $timestamp_type timestamp to integer. " . $e->getMessage() );
-		// 	}
-		// }
-
 		// The way the date is calculated since November 2nd
 		$date = "";
 		if ( isset( $meta['image_meta']['created_timestamp'] ) && $meta['image_meta']['created_timestamp'] != 0 ) {
@@ -406,7 +383,6 @@ class Meow_MWL_Core {
 
 		// Check if the Meow_MWL_Filters filters exist - Try with mwl_img_focal_length
 		if ( !has_filter( 'mwl_img_focal_length' ) ){
-			// Instantiate the Meow_MWL_Filters class
 			$filters = new Meow_MWL_Filters();
 		}
 

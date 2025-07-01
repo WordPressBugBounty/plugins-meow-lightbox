@@ -1,10 +1,10 @@
 === Meow Lightbox ===
 Contributors: TigrouMeow
-Tags: lightbox, responsive, exif, media, gps, map, photography, photo, gutenberg, image, images, gallery, retina
+Tags: lightbox, responsive, exif, map, photo
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 5.3.0
+Stable tag: 5.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,10 @@ Replace all the files. Nothing else to do.
 Please have a look at [Meow Lightbox](https://meowapps.com/meow-lightbox/).
 
 == Changelog ==
+
+= 5.3.1 (2025/07/01) =
+* Update: Improved zoom functionality for a better mobile experience.
+* Fix: Refined initialization process to prevent unwanted Meow Common messages.
 
 = 5.3.0 (2025/05/04) =
 * Add: Support for keyboard navigation.

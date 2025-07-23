@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, map, photo
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 5.3.1
+Stable tag: 5.3.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,9 @@ Replace all the files. Nothing else to do.
 Please have a look at [Meow Lightbox](https://meowapps.com/meow-lightbox/).
 
 == Changelog ==
+
+= 5.3.2 (2025/07/23) =
+* Add: Leaflet images that were missing to improve map visuals
 
 = 5.3.1 (2025/07/01) =
 * Update: Improved zoom functionality for a better mobile experience.

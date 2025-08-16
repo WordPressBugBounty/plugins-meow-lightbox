@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, map, photo
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 5.3.2
+Stable tag: 5.3.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,13 @@ Replace all the files. Nothing else to do.
 Please have a look at [Meow Lightbox](https://meowapps.com/meow-lightbox/).
 
 == Changelog ==
+
+= 5.3.3 (2025/08/16) =
+* Add: Support for "Separate Galleries" feature when using PhotoSwipe.
+* Update: Enhanced PhotoSwipe UI with a sleek, liquid glass finish.
+* Fix: Corrected missing or incorrect ALT Text for images.
+* Fix: Reversed PhotoSwipe data order to ensure thumbnails display correctly.
+* Fix: Resolved issue where PhotoSwipe captions were not visible when animations were enabled.
 
 = 5.3.2 (2025/07/23) =
 * Add: Leaflet images that were missing to improve map visuals

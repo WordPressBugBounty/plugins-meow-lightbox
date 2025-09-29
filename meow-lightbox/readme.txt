@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, map, photo
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 5.3.4
+Stable tag: 5.3.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,12 @@ Replace all the files. Nothing else to do.
 Please have a look at [Meow Lightbox](https://meowapps.com/meow-lightbox/).
 
 == Changelog ==
+
+= 5.3.5 (2025/09/29) =
+* Add: GPS feature with a direct link to Google Maps.  
+* Fix: Optimized PhotoSwipe for better performance.  
+* Fix: Removed unnecessary logs. 
+* Update: Moved the ALT attribute.
 
 = 5.3.4 (2025/08/27) =
 * Fix: Resolved overlapping checkboxes.

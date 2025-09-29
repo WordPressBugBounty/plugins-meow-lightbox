@@ -69,7 +69,9 @@ class Meow_MWL_Admin extends MeowCommon_Admin {
 			echo esc_attr( "No coordinates." );
 		}
 		else {
-			echo esc_attr( "Coordinates: $gps" );
+			echo '<p>' . esc_html( "Coordinates: $gps" ) . '</p>';
+			$google_maps_url = 'https://www.google.com/maps/search/?api=1&query=' . urlencode( $gps );
+			echo '<p><a href="' . esc_url( $google_maps_url ) . '" target="_blank" class="button button-secondary">' . esc_html__( 'Open on Google Maps', 'meow-lightbox' ) . '</a></p>';
 		}
 	}
 

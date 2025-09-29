@@ -316,6 +316,8 @@ class Meow_MWL_Core {
 		$title = isset( $p->post_title ) ? $p->post_title : "";
 		$caption =  isset( $p->post_excerpt ) ? $p->post_excerpt : "";
 		$description = isset( $p->post_content ) ? $p->post_content : "";
+		$alt = get_post_meta( $id, '_wp_attachment_image_alt', true );
+		
 		$dl = null;
 		$file = null;
 		$file_srcset = null;
@@ -414,7 +416,7 @@ class Meow_MWL_Core {
 				'title' => apply_filters( 'mwl_img_title', $title, $id, $meta ),
 				'caption' => apply_filters( 'mwl_img_caption', $caption, $id, $meta ),
 				'description' => apply_filters( 'mwl_img_description', $description, $id, $meta ),
-				'alt_text' => apply_filters( 'mwl_img_alt_text', get_post_meta( $id, '_wp_attachment_image_alt', true ), $id, $meta ),
+				'alt_text' => apply_filters( 'mwl_img_alt_text', $alt, $id, $meta ),
 				'gps' => apply_filters( 'mwl_img_gps', $meta['image_meta']['geo_coordinates'],	$id, $meta ),
 				'copyright' => apply_filters( 'mwl_img_copyright', $meta['image_meta']['copyright'], $id, $meta ),
 				'camera' => apply_filters( 'mwl_img_camera',  $camera, $id, $meta ),

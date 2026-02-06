@@ -1,216 +1,383 @@
 === Meow Lightbox ===
 Contributors: TigrouMeow
-Tags: lightbox, responsive, exif, map, photo
+Tags: lightbox, responsive, exif, photoswipe, photography
+Donate link: https://www.patreon.com/meowapps
 Requires at least: 6.0
-Tested up to: 6.8
+Tested up to: 6.9
+Stable tag: 5.4.9
 Requires PHP: 7.4
-Stable tag: 5.3.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Beautiful Lightbox designed for photography, displaying EXIF data. Highly optimized for speed and elegance. You’ll love it!
+The elegant lightbox built for photographers. Fast, responsive, and displays your photos beautifully with EXIF data and maps. You'll love it! 💕
 
 == Description ==
 
-Responsive Lightbox designed for photography which can also displays EXIF data. This lightbox is highly optimized and designed to be very fast and elegant. You will love it! Here are the main features:
+**Meow Lightbox is the photographer's choice for WordPress**. Built from scratch for speed and elegance, it showcases your images beautifully while displaying EXIF data, GPS maps, and metadata—all in a clean, responsive interface.
 
-- Responsive Layout. Looks great on mobile, tablets and bigger screens.
-- Responsive Images. Image resolution itself will adapt to the screen and device.
-- Display Image / EXIF information. Shutter speed, aperture, camera, lens.
+Stop settling for bloated lightboxes that slow down your site! 😘
 
-What about checking a few examples? Have a look at those:
-- With a Gallery: [Nara Dreamland](https://haikyo.org/nara-dreamland/)
-- Single Photos: [Best Abandoned Places in Japan](https://offbeatjapan.org/best-abandoned-places-2014/)
+Meow Lightbox focuses on what photographers actually need: **Beautiful Presentation** and **Technical Details**. Choose between our custom engine or PhotoSwipe, both optimized for performance. Check out [our official site](https://meowapps.com/meow-lightbox/) to see it in action.
 
-By default, the selector is set for the classes '.entry-content, .gallery, .mgl-gallery'. If you need the Lightbox to be active for more selectors, you will need to update the settings. The plugin will apply the lightbox for images contained by the selector.
+== Core Features ==
 
-We believe that choice of the gallery system depends on you. We however recommend you to use the [Meow Gallery](https://wordpress.org/plugins/meow-gallery/).
+📸 **Responsive Design**
+Looks stunning on mobile, tablets, and desktop. Images adapt to screen size for optimal viewing on any device.
 
-For more information, please check the [official page](https://meowapps.com/meow-lightbox/).
+🎨 **Dual Lightbox Engines**
+Switch between our custom Default Engine or PhotoSwipe. Both are optimized for speed and elegance, with full EXIF support.
 
-=== Pro Version ===
-Getting the Pro version will support us and the development of the plugin, and also add those features:
+📊 **EXIF Data Display**
+Show camera settings, lens info, shutter speed, aperture, ISO, and capture date—perfect for photography portfolios.
 
-- Deep-Linking: allow sharing an URL that will open the Lightbox directly on a specific image.
-- Slideshow: you can start a slideshow from the Lightbox.
-- Social Sharing: share the image on social networks.
-- Animation: the Lightbox can be animated when opening and closing.
-- Google Maps: if GPS is available in your image, a map will be available.
+🗺️ **GPS & Maps**
+Display shooting location with Google Maps or Leaflet integration when GPS data is available in your images.
 
-Languages: English.
+== 📸 Photography Features ==
+
+Your photos deserve to shine. Meow Lightbox displays them beautifully with all the technical details photographers love.
+
+**Image Information:**
+
+* Camera and Lens
+* Shutter Speed & Aperture
+* ISO and Focal Length
+* Capture Date & Time
+* Keywords and Metadata
+* GPS Coordinates
+
+**Display Options:**
+
+* Responsive layout for all devices
+* Fullscreen mode
+* Zoom and pan on images
+* Keyboard navigation
+* Touch gestures on mobile
+
+**Gallery Support:**
+
+* Works with [Meow Gallery](https://wordpress.org/plugins/meow-gallery/)
+* Compatible with WordPress core galleries
+* Supports WooCommerce product images
+* Separate galleries mode
+
+== 🎯 Lightbox Engines ==
+
+Choose the engine that fits your needs best. Both are fast, elegant, and fully featured.
+
+**Default Engine:**
+
+* Custom-built for photographers
+* Smooth zoom animations
+* Clean, minimal interface
+* Optimized for EXIF display
+* Glass morphism design
+
+**PhotoSwipe:**
+
+* Industry-standard lightbox
+* Touch-optimized gestures
+* Smooth transitions
+* Full EXIF integration
+* Modern UI with caption support
+
+== Pro Features ==
+
+* Deep-Linking: Share URLs that open specific images
+* Slideshow: Auto-play through your gallery
+* Social Sharing: Let visitors share your photos
+* Animation: Beautiful open/close transitions
+* Google Maps: Display shooting locations
+* Priority Support
+
+== Why Meow Lightbox? ==
+
+**Performance First**
+No bloat, no unnecessary features. Just clean, fast code that showcases your photos beautifully.
+
+**Built for Photographers**
+EXIF data, GPS maps, and metadata display—everything photographers need in one elegant package.
+
+**Flexible**
+Works with any gallery plugin or WordPress core galleries. Choose your preferred lightbox engine.
+
+**Developer Friendly**
+Clean APIs, WordPress hooks, and filters. Extend it your way.
+
+**Constantly Evolving**
+Regular updates based on real photographer feedback. We listen, we improve.
 
 == Installation ==
 
-1. Upload `meow-lightbox` to the `/wp-content/plugins/` directory
-2. Activate the plugin through the 'Plugins' menu in WordPress
+1. Upload `meow-lightbox` to `/wp-content/plugins/`
+2. Activate through the 'Plugins' menu
+3. Visit Meow Lightbox in your admin menu
+4. Configure your preferences
+5. Start showcasing your photos! 🚀
 
-== Upgrade Notice ==
-
-Replace all the files. Nothing else to do.
+The lightbox activates for `.entry-content`, `.gallery`, and `.mgl-gallery` by default. Customize the selectors in settings if needed.
 
 == Frequently Asked Questions ==
 
-Please have a look at [Meow Lightbox](https://meowapps.com/meow-lightbox/).
+= Does this work with my gallery plugin? =
+
+Yes! Meow Lightbox works with WordPress core galleries, Meow Gallery, and most other gallery plugins. We recommend [Meow Gallery](https://wordpress.org/plugins/meow-gallery/) for the best experience.
+
+= Can I choose which EXIF data to display? =
+
+Absolutely! You control exactly which EXIF fields appear: camera, lens, shutter speed, aperture, ISO, focal length, date, and keywords.
+
+= Which lightbox engine should I use? =
+
+Both are excellent! The Default Engine offers a custom-designed experience optimized for EXIF display. PhotoSwipe is industry-standard with touch-optimized gestures. Try both and see which you prefer!
+
+= Does this work with WooCommerce? =
+
+Yes! Meow Lightbox works great with WooCommerce product images.
+
+= Can I display GPS locations on a map? =
+
+Yes! If your images contain GPS data, you can display shooting locations using Google Maps or Leaflet (Pro feature).
+
+= Is this suitable for large photography websites? =
+
+Absolutely! Meow Lightbox is optimized for performance and works beautifully with sites of any size.
+
+= Does this support keyboard navigation? =
+
+Yes! Use arrow keys to navigate, ESC to close, and keyboard shortcuts for all controls.
+
+= What about multilingual sites? =
+
+Meow Lightbox works great with translation plugins and multilingual setups.
 
 == Changelog ==
 
+= 5.4.9 (2026/01/27) =
+* Fix: Improve shutter speed handling by converting string values to floats.
+* Fix: Speed up thumbnail loading by cleaning URLs before checking for related media attachments.
+* Fix: Ensure deep linking only opens after the page has fully rendered to prevent broken or partial views.
+* Update: Improve mobile and tablet detection by using the browser’s user agent.
+* Update: Allow Orphans to support custom width and height attributes.
+* 🎵 Discuss with others about Meow Lightbox on [the Discord](https://discord.gg/bHDGh38).
+* 🌴 Keep us motivated with [a little review here](https://wordpress.org/support/plugin/meow-lightbox/reviews/). Thank you!
+* 🥰 If you want to help us, check our [Patreon](https://www.patreon.com/meowapps). Thank you!
+
+= 5.4.8 (2026/01/05) =
+* Update: Improve image matching and lazy loading by using data-src instead of src when available.  
+* Fix: Improve display and interaction on small screens, including forcing arrow visibility on mobile devices.  
+* Add: Support responsive images by handling srcset data for better image quality and performance.  
+* Add: Introduce a "Skip dynamic" option to fetch images as orphans for setups not using wp-json.  
+* Add: Enable the Metadata Toggle feature across all themes.  
+* Add: Support infinite loading with Meow Gallery.  
+* Fix: Improve lightbox behavior to properly handle rerendering while it remains open.  
+* Add: Introduce a new "Flat Light" visual theme for the lightbox.
+
+= 5.4.7 (2025/12/14) =
+* Fix: Hotfix to resolve issues with duplicated cache entries.
+
+= 5.4.6 (2025/12/07) =
+* Fix: Correct handling of anti-selectors on parent classes so elements are excluded from the lightbox as expected.
+* Update: Clear the plugin cache automatically when a post is saved to ensure changes are reflected immediately.
+* Fix: Resolve an issue where the disable_cache setting was always treated as false in REST API requests.
+* Add: Introduce an option to enable JavaScript logs for easier debugging and support.
+* Add: New 'include_orphans' option to include media not in the WordPress Media Library in the lightbox.
+
+= 5.4.5 (2025/12/04) =
+* Update: Refactored how styles are loaded.  
+* Update: Improved the way anti-selectors are handled.  
+* Add: Added caching for dynamic content to reduce REST API calls.  
+* Fix: Corrected the regenerate MWL data process.
+
+= 5.4.4 (2025/12/03) =
+* Fix: Prevent long image captions from running off the screen.  
+* Fix: Correct EXIF data display in the Flat theme.
+
+= 5.4.3 (2025/12/03) =
+* Fix: Resolve a PHP warning related to image metadata handling for smoother media processing.
+* Fix: Prevent an error when combining keyword values to ensure keyword handling works reliably.
+
+= 5.4.2 (2025/12/01) =
+* Fix: Adjusted Flat theme captions so they no longer propagate clicks or move when toggling animations.  
+* Add: Introduced orientation-based caption classes and a new Flat theme orientation setting.  
+* Update: Simplified the Flat theme by forcing the "below" display.  
+* Add: Added a rendering delay option and improved handling of static and dynamic content, including a renderMeowLightboxWithSelector function and more reliable media queuing.  
+* Fix: Improved EXIF time handling by using EXIF OffsetTime (0x9010).  
+* Fix: Made the Flat theme use only lightboxified elements, optimized JavaScript selectors, and ensured captions no longer get stuck hidden.  
+* Fix: Updated data transformation and regeneration functions to better handle null or undefined inputs and reliably find attachments by ID.  
+* Update: Refreshed documentation to cover the new Flat theme options and rendering behavior.
+
+= 5.4.1 (2025/11/25) =
+* Add: New Preview Lightbox in the Settings.
+* Add: Introduced a new "Metadata Toggle".
+* Update: Refreshed the Dark Glass, Light Glass and Plain Dark themes.
+* Update: Simplifid the Settings UI.
+* Fix: Correct separate galleries skipping the first gallery.
+* Fix: Improved caption focus and related events.
+* Fix: Prevent magnification from zooming when disabled.
+* Fix: Hide the social sharing icon unless deep linking is enabled.
+* 🎵 Discuss with others about Meow Lightbox on [the Discord](https://discord.gg/bHDGh38).
+* 🌴 Keep us motivated with [a little review here](https://wordpress.org/support/plugin/meow-lightbox/reviews/). Thank you!
+
+= 5.3.8 (2025/11/19) =
+* Fix: Hotfix to prevent errors by ensuring selectors are not empty.
+
+= 5.3.7 (2025/11/18) =
+- Add: New Cosmic Theme and Glass features.
+- Fix: Slideshow intervals for more consistent display.  
+- Fix: Cursor issues when hovering over thumbnails.    
+- Fix: Styling inconsistencies.  
+- Update: Updated MeowKit.
+
+= 5.3.6 (2025/11/12) =
+* Update: Added option to toggle fullscreen mode from settings.
+* Update: Disabled fullscreen mode when map is open.
+* Update: Preserved fullscreen state across different media.
+* Update: Improved accessibility with labels and focus navigation.
+* Fix: Hidden elements with display none when zoomed in.
+* Fix: Hotfix for charset handling in HtmlDomParser.
+* Fix: Corrected mobile meta size to prevent images from jumping during load.
+* Update: Added "Hide Arrows On Mobile" option for cleaner mobile view.
+
 = 5.3.5 (2025/09/29) =
-* Add: GPS feature with a direct link to Google Maps.  
-* Fix: Optimized PhotoSwipe for better performance.  
-* Fix: Removed unnecessary logs. 
-* Update: Moved the ALT attribute.
+* Add: GPS feature with direct link to Google Maps.
+* Fix: Optimized PhotoSwipe for better performance.
+* Fix: Removed unnecessary logs.
+* Update: Moved ALT attribute handling.
 
 = 5.3.4 (2025/08/27) =
 * Fix: Resolved overlapping checkboxes.
-* Fix: Fixed PhotoSwipe AntiSelector logic to correctly handle images with the same ID.
+* Fix: Fixed PhotoSwipe AntiSelector logic to correctly handle images with same ID.
 
 = 5.3.3 (2025/08/16) =
 * Add: Support for "Separate Galleries" feature when using PhotoSwipe.
-* Update: Enhanced PhotoSwipe UI with a sleek, liquid glass finish.
-* Fix: Corrected missing or incorrect ALT Text for images.
+* Update: Enhanced PhotoSwipe UI with sleek, liquid glass finish.
+* Fix: Corrected missing or incorrect ALT text for images.
 * Fix: Reversed PhotoSwipe data order to ensure thumbnails display correctly.
-* Fix: Resolved issue where PhotoSwipe captions were not visible when animations were enabled.
+* Fix: Resolved issue where PhotoSwipe captions weren't visible when animations enabled.
 
 = 5.3.2 (2025/07/23) =
-* Add: Leaflet images that were missing to improve map visuals
+* Add: Leaflet images that were missing to improve map visuals.
 
 = 5.3.1 (2025/07/01) =
-* Update: Improved zoom functionality for a better mobile experience.
+* Update: Improved zoom functionality for better mobile experience.
 * Fix: Refined initialization process to prevent unwanted Meow Common messages.
 
 = 5.3.0 (2025/05/04) =
 * Add: Support for keyboard navigation.
 
 = 5.2.9 (2025/05/01) =
-* Fix: Ensured end_ob function only flushes if output buffering is active to prevent errors.
-* Add: Added internationalization support to allow for translations.
-* Fix: Removed "auto" value from file sizes in image attachment handling for better consistency.
-* Add: Introduced deep linking slug option to customize the URL structure.
-* Update: Dynamically imported PhotoSwipe CSS and added a namespace for the PSWP class to avoid conflicts.
+* Fix: Ensured end_ob function only flushes if output buffering is active.
+* Add: Added internationalization support for translations.
+* Fix: Removed "auto" value from file sizes in image attachment handling.
+* Add: Introduced deep linking slug option to customize URL structure.
+* Update: Dynamically imported PhotoSwipe CSS with namespace to avoid conflicts.
 
 = 5.2.8 (2025/03/12) =
 * Update: Improved MIME type detection for better media compatibility.
-* Fix: Resolved a warning related to MIME type handling.
-* Add: Added logging for media ID resolution and DOM element detection for debugging.
-* Update: Adjusted launch configuration for Xdebug to improve development workflow.
-* Fix: Corrected tag retrieval for the DiDom parsing engine in the core class.
-* Update: Refactored PhotoSwipe captions to render properly instead of using plain strings, matching Default behavior.
+* Fix: Resolved warning related to MIME type handling.
+* Add: Added logging for media ID resolution and DOM element detection.
+* Update: Refactored PhotoSwipe captions to render properly, matching Default behavior.
 * Update: Enhanced captions with scrolling, improved layout, and better visibility.
-* Update: Removed unnecessary error logs for a cleaner experience.
 
 = 5.2.7 (2025/02/17) =
-* Add: Added support for videos in the Default Engine for better media compatibility.
-* Fix: Prevented the Default Engine from closing when clicking on a map.
-* Update: Improved PhotoSwipe by allowing captions to be shown or hidden when zooming in/out.
-* Add: Implemented anti-selector filtering in PhotoSwipe data for better customization.
-* Update: Refactored social sharing to use dynamic settings for more flexibility.
-* ✨ If you have a moment, please write a little [review for the Meow Lightbox](https://wordpress.org/support/plugin/meow-lightbox/reviews/?rate=5#new-post). Thank you! 💕
+* Add: Support for videos in Default Engine.
+* Fix: Prevented Default Engine from closing when clicking on map.
+* Update: Improved PhotoSwipe by allowing captions to show/hide when zooming.
+* Add: Implemented anti-selector filtering in PhotoSwipe data.
+* Update: Refactored social sharing to use dynamic settings.
+* ✨ If you have a moment, please write a little [review for Meow Lightbox](https://wordpress.org/support/plugin/meow-lightbox/reviews/?rate=5#new-post). Thank you! 💕
 
 = 5.2.6 (2025/01/01) =
-* Fix: Hide EXIFs data if none should be displayed.
-* Fix: PhotoSwipe Map scales the same way as the Default Engine.
-* Fix: Hide the captions on map view for PhotoSwipe.
-* Update: Reorganized EXIFs to have Lens and Camera together.
+* Fix: Hide EXIF data if none should be displayed.
+* Fix: PhotoSwipe Map scales same way as Default Engine.
+* Fix: Hide captions on map view for PhotoSwipe.
+* Update: Reorganized EXIF to have Lens and Camera together.
 * Fix: Remove Camera Name from Lens to avoid seeing it twice.
 
 = 5.2.5 (2024/12/06) =
-* Change: Scaling logic moved to the server-side.
-* Fix: Compatibity with Envira Galleries (and more, via mwl_image_attributes).
+* Change: Scaling logic moved to server-side.
+* Fix: Compatibility with Envira Galleries (and more, via mwl_image_attributes).
 * Fix: Error "Could Not Update Options".
-* Add: addToMeowLightboxQueue to dynamically add images with their metadata to the lightbox.
+* Add: addToMeowLightboxQueue to dynamically add images with metadata.
 
 = 5.2.4 (2024/11/04) =
 * Add: Google Maps settings for Map Types.
 * Fix: PhotoSwipe Location without GPS data.
 
 = 5.2.3 (2024/10/17) =
-* Add: Added a RTF Fix option for the Default Engine.
-* Update: Enhanced the code architecture.
-* Fix: Photoswipe display.
-* Fix: Prevent useless events.
+* Add: RTF Fix option for Default Engine.
+* Update: Enhanced code architecture.
+* Fix: PhotoSwipe display issues.
 
 = 5.2.2 (2024/09/19) =
-* Add: Photoswipe support, with compatibility with all the features of the Meow Lightbox.
-* Add: New Lightbox Engine option, which let you choose between the default engine and PhotoSwipe.
+* Add: PhotoSwipe support with compatibility for all Meow Lightbox features.
+* Add: New Lightbox Engine option (choose between Default Engine and PhotoSwipe).
 * Fix: Zoom to Full Resolution.
-* Fix: Minor fixes.
 
 = 5.2.1 (2024/06/28) =
-* Update: Optimized the loading and libs loading.
+* Update: Optimized loading and library loading.
 * Fix: Many minor issues.
-* Fix: Download link was not using the original image.
+* Fix: Download link was not using original image.
 
 = 5.2.0 (2024/06/15) =
 * Fix: Avoid loading scripts when not needed.
-* Fix: Issue related to image_meta, and a few other minor issues.
+* Fix: Issue related to image_meta and other minor issues.
 
 = 5.1.9 (2024/06/05) =
 * Update: Cleaner UI and removed useless dependencies.
-* Fix: Issue with the loading of the scripts.
+* Fix: Issue with script loading.
 
 = 5.1.8 (2024/05/30) =
 * Add: "Selector Ahead" functionality.
 * Add: Better logs for debugging and performance.
 * Fix: Resolved fullscreen issue.
 * Fix: Addressed performance impact by avoiding Image ID resolution by default.
-* Fix: Corrected array offset warning on image info.
-* Fix: Prevented division by zero for shutter speed.
-* Fix: Ensured proper loading of pro scripts with cache.
-* Fix: Avoid warnings related to geo_coordinates.
 
 = 5.1.7 (2024/05/13) =
-* Update: Only load map scripts when images with GPS data are present and map option is enabled.
-* Fix: Corrected the selector issue when "Ahead" option is not used.
-* Fix: Improved zoom and close animations in the lightbox.
+* Update: Only load map scripts when images with GPS data are present.
+* Fix: Corrected selector issue when "Ahead" option not used.
+* Fix: Improved zoom and close animations.
 
 = 5.1.6 (2024/04/27) =
 * Update: Pro scripts now load only on front-end, excluding admin pages.
-* Optimization: Added asynchronous loading for Leaflet to prevent conflicts when pre-loaded by other resources.
-* Update: Ensured pro scripts load even if lightbox initialization is skipped.
-* Fix: Confirmed output buffer is HTML in OB Mode to ensure correct rendering.
+* Optimization: Added asynchronous loading for Leaflet.
 
 = 5.1.4 (2024/03/16) =
 * Fix: Avoid issues with non-image media.
 * Add: Static CDN support (to retrieve EXIF data for offloaded media).
 
 = 5.1.3 (2024/02/02) =
-* Add: Introduced "Selector Ahead" in Performance for back-end class checks.
-* Update: Replaced "Hide/Show info" with a "Fullscreen" feature for enhanced viewing.
-* Fix: Removed debug log for cleaner operation.
+* Add: Introduced "Selector Ahead" in Performance settings.
+* Update: Replaced "Hide/Show info" with "Fullscreen" feature.
 
 = 5.1.2 (2024/01/20) =
 * Add: Maintenance features with export, import, and reset options.
 * Update: Implemented map/image icon logic.
-* Fix: Resolved issue with no metadata on output buffering due to empty anti-selector.
 * Update: Introduced separate galleries based on Selector functionality.
 
 = 5.1.1 (2023/12/25) =
 * Update: Single click feature for unzooming images.
 * Add: Zoom and Pan functionality for mobile devices.
-* Add: Pan support when zoomed and double-click to unzoom.
-* Update: Implementation to ignore anti-selectors in lightboxify process.
 * 🌲💫 Merry Christmas!
 
 = 5.0.9 (2023/11/29) =
-* Add: Support for the collections of the Meow Gallery.
+* Add: Support for Meow Gallery collections.
 * Add: WordPress Big Image Display support.
 * Fix: Compatibility with Beaver Builder.
-* Fix: Warning in the Meow GPS box.
 
 = 5.0.8 (2023/11/15) =
 * Add: New backdrop opacity setting for enhanced visual customization.
 * Add: Animation speed control for dynamic gallery transitions.
-* Update: Compact carousel design with integrated navigation and captions for an immersive experience.
-* Fix: Resolved various carousel issues including caption visibility, zoom opening on larger carousels, and missing closing - comparison.
-* Fix: Addressed lightboxify empty DOM in large galleries and fixed missing wp-image class with output buffering.
+* Update: Compact carousel design with integrated navigation.
 
 = 5.0.7 (2023/11/03) =
-* Fix: Calculation for the date.
-* Add: Toggle Animation. You can see it in action [here](https://meowapps.com/meow-lightbox/tutorial/).
+* Fix: Calculation for date.
+* Add: Toggle Animation. See it in action [here](https://meowapps.com/meow-lightbox/tutorial/).
 
 = 5.0.5 (2023/10/23) =
-* Fix: Issue related to the zero date.
-* Update: If ran into a Meow Gallery, the lightbox will only be applied to the images of the gallery.
+* Fix: Issue related to zero date.
+* Update: If ran into Meow Gallery, lightbox only applies to gallery images.
 
 = 5.0.4 (2023/10/02) =
 * Fix: Compatibility with PHP 8.2 (DiDom).
@@ -222,272 +389,12 @@ Please have a look at [Meow Lightbox](https://meowapps.com/meow-lightbox/).
 * Add: Line returns in captions.
 * Add: Caption Ellipsis (for long captions) is now an option.
 * Add: HTML support for titles.
-* Fix: Removed the potential mwl_data error.
 
 = 5.0.1 (2023/09/12) =
 * Fix: It was only displaying the first 12 images of a gallery.
 
 = 5.0.0 (2023/09/01) =
-* Update: The plugin was completely refactor, many parts were rewritten as well. This will allow us to add new features more easily.
-* Info: I wouldn't be surprised if there are some issues in some cases, please let me know if you find any.
-
-= 4.0.6 (2023/05/30) =
-* Fix: Issue with Map Layout.
-
-= 4.0.5 (2023/05/01) =
-* Fix: Carousel was only working in the right conditions.
-* Add: ALT for all images to please those SEO checkers.
-* Update: General cleanup to simplify the code structure.
-* Add: Keywords in the EXIF section.
-
-= 4.0.4 (2023/04/09) =
-* Fix: Description now allows HTML.
-* Fix: Hide nav when only one photo.
-* Fix: Could not click the Google Maps buttons.
-* Fix: Slideshow was stopping by itself.
-
-= 4.0.2 (2023/03/23) =
-* Fix: Restore the common dashboard, and lighter bundle.
-
-= 4.0.1 (2023/03/22) =
-* Add: New filter mwl_download_link. If you return an empty link, the icon will be removed.
-* Fix: Issue with Output Buffering.
-* Update: Huge update, new system. Looks should be the same, but from now, it will be easier to maintain and add new features. Please test it well and let me know if you find any issue.
-
-= 3.2.2 (2022/09/29) =
-* Fix: Compatibility with WordPress 6.0.1.
-* Add: Latest versions of packages.
-
-= 3.2.1 (2022/04/21) =
-* Add: jQuery is not required anymore.
-* Fix: There were some random issues.
-
-= 3.1.9 (2022/04/14) =
-* Add: Option for Output Buffering. That will avoid issues for some users.
-
-= 3.1.8 (2022/04/07) =
-* Fix: No more scrolling of the site with the Lightbox is displayed.
-* Fix: There was some issue with the JS and CSS only used when actively used.
-
-= 3.1.7 (2022/02/23) =
-* Update: Only load the JS and CSS when the Lightbox is actively used.
-* Add: Support for 'mwl-img-disabled' class.
-
-= 3.1.6 (2022/02/20) =
-* Add: Zoom level for map.
-* Fix: Title was overriden by themes too easily.
-
-= 3.1.5 (2021/09/22) =
-* Fix: Low-res could be larger than high-res.
-* Fix: Issue with download.
-* Update: Common lib 3.6.
-
-= 3.1.4 (2021/09/21) =
-* Fix: Issue with low res first not sized correctly.
-* Add: A metabox that displays the GPS info (useful for debugging it).
-
-= 3.1.3 (2021/09/18) =
-* Fix: Catch error when no srcset or sizes.
-* Fix: Don't escape HTML in title/caption.
-
-= 3.1.2 (2021/09/11) =
-* Fix: Refresh metadata when media updated through ajax.
-* Update: New and lighter architecture.
-
-= 3.1.1 (2021/09/01) =
-* Fix: Enhanced security.
-
-= 3.0.9 (2021/07/08) =
-* Add: Option for social sharing.
-* Update: Sanitize the value for selector and anti selector
-* Update: Added a few cameras and lenses.
-
-= 3.0.8 (2021/05/22) =
-* Update: More natural zoom.
-* Fix: Tiny fixes and improvements.
-
-= 3.0.4 =
-* Add: Option for magnification.
-* Fix: Avoid breaking pagebuilders.
-* Update: Replace Leaftlet by Google Maps SDK.
-* Fix: Listen to arrow keys when lighbox is open.
-
-= 3.0.3 =
-* Fix: Doesn't break page builders and Rank Math SEO.
-* Update: Meow Common 3.3.
-
-= 3.0.2 =
-* Add: Option to disable cache.
-* Fix: Lightbox navigation arrows keeping hover state on mobile.
-
-= 3.0.1 =
-* Update: Avoid issues when reading the PHP Error Logs.
-* Update: Re-added the timer/delay for the slideshow.
-
-= 3.0.0 (2020/09/06) =
-* Update: Brand new UI on the admin side.
-
-= 2.0.7 =
-* Fix: Const was used in a non-transpiled environment (and therefore, not working on old browsers).
-
-= 2.0.6 =
-* Fix: Divi Builder was not working when Meow Lightbox was enabled.
-
-= 2.0.5 =
-* Fix: Issue in the map when lazyloading was used in the gallery.
-
-= 2.0.4 =
-* Add: Option to load a low-res first, to make sure the image appears instantly.
-* Fix: Exif data format.
-* Fix: Bug with certain theme, only the first image was displayed.
-
-= 2.0.3 =
-* Fix: Performance issue related to the DOM.
-* Update: Optimized the way the images are prepared.
-* Fix: Move lightbox controls down when admin bar is displayed.
-* Fix: Wraps EXIF when too long.
-* Fix: Byebye to the naturalWidth issue.
-* Fix: Hide map icon if... it's disabled.
-* Add: Display focal length and capture date.
-
-= 1.7.9 =
-* Fix: There was a little notice in the Error Logs for old versions of PHP.
-
-= 1.7.8 =
-* Fix: Issue with WooCommerce checkout.
-
-= 1.7.6 =
-* Update: Exif analysis code restructured.
-* Add: Slideshow feature for Pro.
-
-= 1.7.5 =
-* Fix: There was an JS error with ImageLoad.
-* Update: Improve sizing of low-res image.
-* Fix: Compatibility with IE11.
-
-= 1.7.3 =
-* Fix: REST requests with the GET method were handled by the plugin (and they shouldn't).
-* Update: Loader SVG was moved inline.
-
-= 1.7.1 =
-* Fix: Avoid notices when lens it not available in EXIF.
-* Fix: Swipe detection.
-
-= 1.6.9 =
-* Fix: Simpler and probably better REST detection.
-* Fix: Potential fix for WooCommerce.
-* Add: Support more camera names.
-
-= 1.6.8 =
-* Fix: Remove the notices about the 'Undefined index: geo_coordinates' and the missing path.
-* Add: Filters for all the image information.
-* Add: Enable right click option.
-* Info: If you like this lightbox, please review it. We absolutely need your help in order to add fresh features. You can do it [here]( https://wordpress.org/support/plugin/meow-lightbox/reviews/?rate=5#new-post). Thanks a lot :)
-
-= 1.6.4 =
-* Add: Image Size option (Responsive Images or defined Image Size).
-* Add: Low-Res First, Deep-Linking.
-* Update: Better loader and cleaner JS.
-
-= 1.6.3 =
-* Fix: Issue with OB and REST updates in the Post Editor.
-* Update: Dashboard and common librairies refreshed.
-* Update: Default settings are now set to use OB Mode and HtmlDomParser. If that brings issues for you, please have a look at this: [For broken HTML / other issues](https://wordpress.org/support/topic/for-broken-html-other-issues/), and try the second piece of code.
-
-= 1.6.1 =
-* Fix: There was a little mess-up with the Output Buffering.
-* Update: Back-end process go through all images instead of being limited by the selector (selector is activated in the front only).
-* Info: Sorry, there was a lot of work done on the plugin this week to make it work everywhere, as always, your feedbacks are really valuable. Thank you so much :)
-
-= 1.5.8 =
-* Add: New hidden/internal options.
-* Updated: Now use OB, coupled with a fast parsing engine.
-* Update: Still trying to find the best compromise compatibility/performance (with default behavior that works on 99.8% of the installs). Now the internals of the plugin can work differently depending on internal options, so if you have an issue, please contact us and we will look into it.
-
-= 1.5.7 =
-* Update: Fix HTML issues and rendering.
-* Update: Additional compatibility for W3C.
-
-= 1.5.6 =
-* Fix: Little issue caused by anti-selector.
-* Fix: Captions and EXIF weren't showing in images used outside galleries. The Lightbox is now parsing the DOM to actually get all the required information and should work for everything.
-* Info: If you like this lightbox, please review it. We absolutely need your help in order to add fresh features. You can do it [here]( https://wordpress.org/support/plugin/meow-lightbox/reviews/?rate=5#new-post). Thanks a lot :)
-
-= 1.5.4 =
-* Note: Many things were fixed in the very last commit, but are linked to the very recent changes. Please have a look at the changes below, and it is also recommended to visit your settings for the Lightbox and click on the Reset Cache button (at the top).
-* Update: Refactoring of many parts of the lightbox, settings were simplified.
-* Update: Do not use slow asynchronous requests anymore = no more delay, the lightbox works right away, with EXIF caching.
-* Update: Icons and styles were reviewed.
-* Fix: The little images are not blown out anymore.
-* Info: If you like this lightbox, please review it. We absolutely need your help in order to add fresh features. You can do it [here](https://wordpress.org/support/plugin/meow-lightbox/reviews/?rate=5#new-post). Thanks a lot :)
-
-= 1.4.6 =
-* Fix: Cache was not always reset accordingly.
-
-= 1.4.4 =
-* Fix: GPS was not being cached.
-* Fix: Ajax calls optimization.
-* Update: Caching optimization.
-
-= 1.4.2 =
-* Update: Added Anti Selector (CSS selector) to avoid Lightbox to be applied.
-* Fix: Better display of arrows on light photos.
-* Fix: There was an issue when the same photo was used twice on the same page.
-* Fix: Incompatibility had the bad effect to freeze the website.
-* Update: Compatibility with WP 5 and Gutenberg.
-
-= 1.2.2 =
-* Fix: Remove Updraft link.
-* Update: For speed and confidentiality purposes, top using external CDNs. Inline SVGs are used instead.
-* Info: If you like this lightbox, please review it. We absolutely need your help in order to add fresh features. You can do it here: https://wordpress.org/support/plugin/meow-lightbox/reviews/?rate=5#new-post. Thanks a lot :)
-
-= 1.1.2 =
-* Add: By default, also add the Lightbox to the Meow Gallery.
-* Update: Display a message in the admin if the Permalinks are not enabled (they are required by the Lightbox API).
-
-= 1.1.0 =
-* Update: Code cleaning.
-* Fix: SSL verify for updates.
-
-= 1.0.6 =
-* Add: Swipe.
-* Fix: Issue with preloading.
-* Fix: Issue with vertical photo.
-
-= 1.0.3 =
-* Fix: If there are errors in the EXIF, show images anyway.
-* Fix: Incompatibility with older versions of PHP.
-
-= 1.0.0 =
-* Add: Map for the Photography Layout, if there are GPS coordinates.
-* Add: GPS coordinates for images.
-* Update: Better performance.
-* Update: Disable PrettyPhoto if it is forced by a theme.
-
-= 0.1.3 =
-* Add: Option to choose which caption to display in the lightbox (caption or description).
-
-= 0.1.2 =
-* Update: Better handing of the API calls.
-* Pro: Preloading.
-
-= 0.1.0 =
-* Add: Lens information.
-* Update: Bigger arrows.
-* Update: Camera info, from now this data will be made "nicer" to look at little by little.
-
-= 0.0.7 =
-* Add: Theme (Dark or Light)
-* Add: Layout (Minimal)
-* Update: Improved options.
-
-= 0.0.3 =
-* Fix: Was catching too many JS key events.
-* Add: Swiping images
-* Add: 'Close' button
-
-= 0.0.1 =
-* First release.
+* Update: Complete plugin refactor. Many parts rewritten for better maintainability.
 
 == Screenshots ==
 

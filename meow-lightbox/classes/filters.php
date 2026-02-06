@@ -133,9 +133,15 @@ class Meow_MWL_Filters {
 
 
 	function mwl_img_shutter_speed( $value, $mediaId, $meta ) {
+
+		if( is_string( $value ) ) {
+			$value = floatval( $value );
+		}
+
 		if ( empty( $value ) || $value == 0 ) {
 			return "N/A";
 		}
+
 		$text = $this->nice_shutter_speed($value);
 		return $text;
 	}

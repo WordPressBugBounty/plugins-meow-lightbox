@@ -1,8 +1,8 @@
 <?php
 
-if ( !class_exists( 'MeowCommon_Ratings' ) ) {
+if ( !class_exists( 'MeowKit_MWL_Ratings' ) ) {
 
-  class MeowCommon_Ratings {
+  class MeowKit_MWL_Ratings {
     public $mainfile;   // plugin main file (media-file-renamer.php)
     public $domain;     // domain used for translation (media-file-renamer)
     public $prefix;      // used for many things (filters, options, etc)

@@ -1,4 +1,4 @@
-"use strict";(self.wpJsonLightbox=self.wpJsonLightbox||[]).push([[641],{300:(t,i,e)=>{
+"use strict";(self.wpJsonLightbox=self.wpJsonLightbox||[]).push([[641],{13:(t,i,e)=>{
 /*!
   * PhotoSwipe 5.4.4 - https://photoswipe.com
   * (c) 2024 Dmytro Semenov

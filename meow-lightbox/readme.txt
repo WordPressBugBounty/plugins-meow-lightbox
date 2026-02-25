@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, photoswipe, photography
 Donate link: https://www.patreon.com/meowapps
 Requires at least: 6.0
 Tested up to: 6.9
-Stable tag: 5.4.9
+Stable tag: 5.5.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -152,6 +152,13 @@ Yes! Use arrow keys to navigate, ESC to close, and keyboard shortcuts for all co
 Meow Lightbox works great with translation plugins and multilingual setups.
 
 == Changelog ==
+
+= 5.5.0 (2026/02/25) =
+* Add: New autoplay option for slideshows so galleries can play automatically.
+* Add: Support for rendering the lightbox inside a parent element.
+* Update: Orphaned media now reuses existing IDs for the same URL to avoid duplicate entries.
+* Fix: Hotfix to prevent server errors (500) when EXIF GPS data is not formatted as an array.
+* Update: Upgraded the DiDom library to v2 to resolve double-encoding issues.
 
 = 5.4.9 (2026/01/27) =
 * Fix: Improve shutter speed handling by converting string values to floats.

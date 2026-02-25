@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DiDom;
 
 class Encoder
@@ -10,25 +12,11 @@ class Encoder
      *
      * @return string
      */
-    // public static function convertToHtmlEntities($string, $encoding)
-    // {
-    //     if (function_exists('mb_convert_encoding')) {
-    //         return mb_convert_encoding($string, 'HTML-ENTITIES', $encoding);
-    //     }
-
-    //     if ('UTF-8' !== $encoding) {
-    //         $string = iconv($encoding, 'UTF-8//IGNORE', $string);
-    //     }
-
-    //     return preg_replace_callback('/[\x80-\xFF]+/', [__CLASS__, 'htmlEncodingCallback'], $string);
-    // }
-
-    public static function convertToHtmlEntities($string, $encoding)
+    public static function convertToHtmlEntities(string $string, string $encoding): string
     {
-        $convmap = [0x80, 0xFFFF, 0, 0xFFFF];
-        
-        if (function_exists('mb_encode_numericentity')) {
-            return mb_encode_numericentity($string, $convmap, $encoding);
+        // handling HTML entities via mbstring is deprecated in PHP 8.2
+        if (function_exists('mb_convert_encoding') && PHP_VERSION_ID < 80200) {
+            return mb_convert_encoding($string, 'HTML-ENTITIES', $encoding);
         }
 
         if ('UTF-8' !== $encoding) {
@@ -43,7 +31,7 @@ class Encoder
      *
      * @return string
      */
-    private static function htmlEncodingCallback($matches)
+    private static function htmlEncodingCallback(array $matches): string
     {
         $characterIndex = 1;
         $entities = '';

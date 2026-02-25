@@ -202,8 +202,9 @@ class Meow_MWL_Core {
 						'metadata_toggle_start_hidden' => $this->get_option( 'metadata_toggle_start_hidden', false ),
 					),
 					'slideshow' => array(
-						'enabled' => $this->get_option( 'slideshow', false ),
-						'timer' => $this->get_option( 'slideshow_timer', 3000 )
+						'enabled'  => $this->get_option( 'slideshow', false ),
+						'timer'    => $this->get_option( 'slideshow_timer', 3000 ),
+						'autoplay' => $this->get_option( 'slideshow_autoplay', false )
 					),
 					'map' => array(
 						'enabled' => $this->get_option( 'map', false ),
@@ -726,7 +727,7 @@ class Meow_MWL_Core {
 				$src = $element->src;
 				$mglSrc = $element->{'mgl-src'};
 			} else if ( $this->parsingEngine === 'DiDom' ) {
-				$tag = $element->tag;
+				$tag = $element->tagName();
 				$src = $element->attr('src');
 				$mglSrc = $element->attr('mgl-src');
 			}
@@ -1009,6 +1010,7 @@ class Meow_MWL_Core {
 			'cdn_support_dest' => '',
 			'slideshow' => false,
 			'slideshow_timer' => 3000,
+			'slideshow_autoplay' => false,
 			'map' => false,
 			'exif_title' => true,
 			'exif_caption' => true,

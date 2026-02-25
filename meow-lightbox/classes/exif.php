@@ -12,6 +12,8 @@ class Meow_MWL_Exif {
 	}
 
 	static function convert_gps( $exifCoord, $hemi ) {
+		if( !is_array( $exifCoord ) ) return 0;
+
 		$degrees = count( $exifCoord ) > 0 ? Meow_MWL_Exif::gps2Num( $exifCoord[0] ) : 0;
 		$minutes = count( $exifCoord ) > 1 ? Meow_MWL_Exif::gps2Num( $exifCoord[1] ) : 0;
 		$seconds = count( $exifCoord ) > 2 ? Meow_MWL_Exif::gps2Num( $exifCoord[2] ) : 0;

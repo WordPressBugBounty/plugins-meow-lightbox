@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, photoswipe, photography
 Donate link: https://www.patreon.com/meowapps
 Requires at least: 6.0
 Tested up to: 6.9
-Stable tag: 5.5.0
+Stable tag: 5.5.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -152,6 +152,13 @@ Yes! Use arrow keys to navigate, ESC to close, and keyboard shortcuts for all co
 Meow Lightbox works great with translation plugins and multilingual setups.
 
 == Changelog ==
+
+= 5.5.1 (2026/03/09) =
+* Update: Improved image performance by using hardware-accelerated CSS on image elements.
+* Add: Added aria-label attributes to UI elements (accessibility for screen readers).
+* Fix: Corrected a configuration check in the bundled HTML parser library.
+* Update: Reorganized the "Features" options for a clearer layout.
+* Add: Added support for fullscreen mode to provide an immersive viewing experience.
 
 = 5.5.0 (2026/02/25) =
 * Add: New autoplay option for slideshows so galleries can play automatically.

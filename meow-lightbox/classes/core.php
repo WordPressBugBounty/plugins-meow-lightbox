@@ -25,46 +25,28 @@ class Meow_MWL_Core {
 		add_action( 'save_post', array( $this, 'on_save_post' ), 10, 3 );
 		//add_filter( 'mgl_force_rewrite_mwl_data', array( $this, 'mgl_force_rewrite_mwl_data' ), 10, 1 );
 		add_action( 'edit_attachment', array( $this, 'edit_attachment' ), 10, 1 );
-		if ( class_exists( 'MeowPro_MWL_Core' ) ) {
-			$this->map = new MeowPro_MWL_Core( $this );
-		}
+		
 
-		// The Lightbox should be completely off if the request is asynchronous
-		MeowKit_MWL_Helpers::is_rest() && new Meow_MWL_Rest( $this );
-		$recent_common = method_exists( 'MeowKit_MWL_Helpers', 'is_pagebuilder_request' );
-		if ( MeowKit_MWL_Helpers::is_asynchronous_request() || ( $recent_common && MeowKit_MWL_Helpers::is_pagebuilder_request() ) ) {
-			return;
-		}
-
-		$this->isObMode = $this->get_option( 'output_buffering', $this->isObMode );
-		$this->imageSize = $this->get_option( 'image_size', 'srcset' );
-		$this->disableCache = $this->get_option( 'disable_cache' );
-		$this->isInfinite = $this->get_option( 'infinite', false );
-		$this->parsingEngine = $this->get_option( 'parsing_engine', $this->parsingEngine );
-		$this->renderingMode = $this->isObMode ? 'rewrite' : $this->get_option( 'rendering_mode', $this->renderingMode );
-
+		
 		if ( !is_admin() ) {
-			$this->construct_client();
-		}
 
-	}
+			if ( class_exists( 'MeowPro_MWL_Core' ) ) {
+				$this->map = new MeowPro_MWL_Core( $this );
+			}
 
-	public function init() {
-		if ( is_admin() ) {
-			load_plugin_textdomain( MWL_DOMAIN, false, MWL_PATH . '/languages' );
-			
-		}
+			// The Lightbox should be completely off if the request is asynchronous
+			MeowKit_MWL_Helpers::is_rest() && new Meow_MWL_Rest( $this );
+			$recent_common = method_exists( 'MeowKit_MWL_Helpers', 'is_pagebuilder_request' );
+			if ( MeowKit_MWL_Helpers::is_asynchronous_request() || ( $recent_common && MeowKit_MWL_Helpers::is_pagebuilder_request() ) ) {
+				return;
+			}
 
-		new Meow_MWL_Admin( $this );
-	}
-
-	public function construct_client(){
-		if ( !MeowKit_MWL_Helpers::is_rest() ) {
-			new Meow_MWL_Filters();
-			add_action( 'mwl_lightbox_added', array( $this, 'lightbox_added' ), 10, 1 );
-
-			// Try to take advantage of the Responsive Images feature of WP 4.4+ to make things faster.
-			// add_filter( 'wp_get_attachment_image_attributes', array( $this, 'wp_get_attachment_image_attributes' ), 10, 2 );
+			$this->isObMode = $this->get_option( 'use_output_buffering', $this->isObMode );
+			$this->imageSize = $this->get_option( 'image_size', 'srcset' );
+			$this->disableCache = $this->get_option( 'disable_cache' );
+			$this->isInfinite = $this->get_option( 'infinite', false );
+			$this->parsingEngine = $this->get_option( 'parsing_engine', $this->parsingEngine );
+			$this->renderingMode = $this->isObMode ? 'rewrite' : 'replace';
 
 			// MODE: Output Buffering
 			if ( $this->isObMode ) {
@@ -72,27 +54,44 @@ class Meow_MWL_Core {
 				add_action( 'init', array( $this, 'start_ob' ) );
 				add_action( 'shutdown', array( $this, 'end_ob' ), 100 );
 				$this->renderingMode = 'rewrite';
-
-				// This doesn't work well with the conditional loading of the scripts, so we need to load it anyway.
-				if( !$this->isEnqueued )
-				{
-					$this->log( '⚠️ The scripts were enqueued manually because the OB mode is enabled.' );
-
-					add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-					add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
-
-					if ($this->map !== null) {
-						$this->map->lightbox_added();
-					}
-				}
-				
 			}
-			// MODE: Standard (Responsive Images)
+			// MODE: Standard (Non Responsive Images)
 			else {
 				// Analyze only page/post content and write the data in the footer.
 				add_filter( 'the_content', array( $this, 'lightboxify' ), 20 );
 				add_action( 'wp_footer', array( $this, 'wp_footer' ), 100 );
 			}
+
+		}
+
+	}
+
+	public function init() {
+		if ( is_admin() ) {
+			load_plugin_textdomain( MWL_DOMAIN, false, MWL_PATH . '/languages' );
+			new Meow_MWL_Admin( $this );
+		}
+
+
+		if ( !is_admin() ) {
+			$this->construct_client();
+		}
+	}
+
+	public function construct_client(){
+		if ( !MeowKit_MWL_Helpers::is_rest() ) {
+			new Meow_MWL_Filters();
+
+			// Load the scripts for the lightbox
+			$this->lightbox_added( );
+			
+			// If a pro feature is enabled, we need to load the pro scripts as well
+			if ( $this->map !== null ) {
+				if ( $this->has_pro_options() ) {
+					$this->map->lightbox_added();
+				}
+			}
+
 
 			// All Mode: Need to handle the Meow Gallery (which is JS only)
 			add_action( 'mgl_gallery_created', array( $this, 'meow_gallery_created' ), 10, 3 );
@@ -108,7 +107,7 @@ class Meow_MWL_Core {
 		return apply_filters( 'mwl_allow_usage', current_user_can( 'upload_files' ) );
 	}
 
-	public function lightbox_added( $mediaId ) {
+	public function lightbox_added(  ) {
 		if ( $this->isEnqueued ) {
 			return;
 		}
@@ -156,7 +155,7 @@ class Meow_MWL_Core {
 					'theme' => $this->get_option( 'theme', 'dark-glass' ),
 					'flat_orientation' => $this->get_option( 'flat_orientation', 'auto' ),
 					'orientation' => $this->get_option( 'orientation', 'auto' ),
-					'selector' => $this->get_option( 'selector', '.entry-content, .gallery, .mgl-gallery, .wp-block-gallery,  .wp-block-image' ),
+					'selector' => $this->get_option( 'selector', '.entry-content, .gallery, .mgl-root, .wp-block-gallery,  .wp-block-image' ),
 					'selector_ahead' => $this->get_option( 'selector_ahead', false ),
 					'deep_linking' => $this->get_option( 'deep_linking', false ),
 					'deep_linking_slug' => $this->get_option( 'deep_linking_slug', 'mwl' ),
@@ -271,7 +270,8 @@ class Meow_MWL_Core {
 			$parsed = parse_url( $page_url );
 			$page_url = $parsed['path'] ?? '';
 		}
-		return 'mwl_page_dynamic_' . $page_url;
+		// Use MD5 hash to avoid exceeding WordPress transient name limit
+		return 'mwl_page_dynamic_' . md5( $page_url );
 	}
 
 	private function delete_page_dynamic_cache( $page_url = null ) {
@@ -474,9 +474,9 @@ class Meow_MWL_Core {
 							if ( count( $parts ) === 2 ) {
 								$seconds = (int)$parts[0] * 3600 + (int)$parts[1] * 60;
 								if ( $sign === '+' ) {
-									$timestamp -= $seconds;
-								} else if ( $sign === '-' ) {
 									$timestamp += $seconds;
+								} else if ( $sign === '-' ) {
+									$timestamp -= $seconds;
 								}
 							}
 						}
@@ -802,11 +802,7 @@ class Meow_MWL_Core {
 			if ( !in_array( $mediaId, $this->images ) ) {
 				array_push( $this->images, $mediaId );
 			}
-	
-			if ( !$this->isEnqueued ) {
-				$this->log( '⚡ The scripts were enqueued because the lightbox detected a media element.' );
-				do_action( 'mwl_lightbox_added', $mediaId );
-			}
+
 			
 			return $this->renderingMode === 'replace'
 				? str_replace( trim( $from, "</> " ), trim( $element, "</> " ), $buffer )
@@ -814,6 +810,73 @@ class Meow_MWL_Core {
 		}
 		
 		return $this->renderingMode === 'replace' ? false : $buffer;
+	}
+
+	function lightboxify_component( $html ) {
+
+		$component_sources = array(
+			array(
+				'selector'       => '[data-gallery-options]',
+				'data_attribute' => 'data-gallery-options',
+				'ids_key'        => 'image_ids',
+			),
+		);
+		
+		// Allow other plugins to add their own component sources
+		$component_sources = apply_filters( 'mwl_component_sources', $component_sources );
+		
+		foreach ( $component_sources as $source ) {
+			$selector       = $source['selector'] ?? '';
+			$data_attribute = $source['data_attribute'] ?? '';
+			$ids_key        = $source['ids_key'] ?? '';
+			
+			if ( empty( $selector ) || empty( $data_attribute ) || empty( $ids_key ) ) {
+				continue;
+			}
+			
+			$components = $html->find( $selector );
+			
+			if ( empty( $components ) ) {
+				continue;
+			}
+			
+			$this->log( '🟢 Found ' . count( $components ) . ' gallery component(s) matching: ' . $selector );
+			
+			foreach ( $components as $component ) {
+				$options = null;
+				
+				if ( $this->parsingEngine === 'HtmlDomParser' ) {
+					$options = $component->{$data_attribute};
+				} else {
+					$options = $component->attr( $data_attribute );
+				}
+				
+				if ( empty( $options ) ) {
+					continue;
+				}
+				
+				$options = html_entity_decode( $options, ENT_QUOTES, 'UTF-8' );
+				
+				// Decode the JSON options
+				$decoded = json_decode( $options, true );
+				
+				if ( json_last_error() !== JSON_ERROR_NONE ) {
+					$this->log( '⚠️ Failed to parse ' . $data_attribute . ' JSON: ' . json_last_error_msg() );
+					continue;
+				}
+				
+				// Extract image IDs using the configured key
+				if ( isset( $decoded[$ids_key] ) && is_array( $decoded[$ids_key] ) ) {
+					foreach ( $decoded[$ids_key] as $imageId ) {
+						$imageId = (int) $imageId;
+						if ( $imageId > 0 && !in_array( $imageId, $this->images ) ) {
+							array_push( $this->images, $imageId );
+						}
+					}
+					$this->log( '🟢 Extracted ' . count( $decoded[$ids_key] ) . ' image ID(s) from component (' . $ids_key . ').' );
+				}
+			}
+		}
 	}
 
 	function lightboxify( $buffer ) {
@@ -846,9 +909,11 @@ class Meow_MWL_Core {
 
 		// Mark elements that should be ignored based on anti-selectors
 		$this->lightbox_ignore_element( $html );
+		$this->lightboxify_component( $html );
 
-		$classes = $this->get_option( 'selector', '.entry-content, .gallery, .mgl-gallery, .wp-block-gallery' );
+		$classes = $this->get_option( 'selector', '.entry-content, .gallery, .mgl-root, .wp-block-gallery' );
 		$classes = explode( ',', $classes );
+		$classes = array_map( 'trim', $classes );
 
 		if ( empty( $classes ) ) {
 			$this->log( '🪲 No classes were found in the selector.' );
@@ -856,7 +921,6 @@ class Meow_MWL_Core {
 	
 		foreach ( $classes as $class ) {
 
-			$class = trim( $class );
 			// Include both img and video elements (and direct child selectors)
 			$elements = $html->find("$class img, img$class, $class video, video$class");
 			
@@ -908,12 +972,6 @@ class Meow_MWL_Core {
 		// 		array_push( $this->images, $image_id );
 		// 	}
 		// }
-		if ( $this->isEnqueued ) {
-			return;
-		}
-
-		$this->log( '⚡ The scripts have been added to the because a Meow Gallery was detected.' );
-		do_action( 'mwl_lightbox_added', $image_ids );
 	}
 
 	public function mgl_force_rewrite_mwl_data( $images_ids ) {
@@ -991,6 +1049,22 @@ class Meow_MWL_Core {
 		return $options[ $option_name ] ?? $default;
 	}
 
+	function has_pro_options() {
+		$pro_options = [
+			'map',
+			'slideshow',
+			'deep_linking',
+		];
+
+		foreach ( $pro_options as $option ) {
+			if ( $this->get_option( $option, false ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	function reset_options() {
 		delete_option( $this->option_name );
 	}
@@ -1044,14 +1118,14 @@ class Meow_MWL_Core {
 			'disable_arrows_on_mobile' => false,
 			'animation_toggle' => 'none',
 			'animation_speed' => 'normal',
-			'output_buffering' => true,
+			'use_output_buffering' => false,
 			'rendering_delay' => 300,
 			'skip_dynamic_fetch' => false,
 			'debug_logs' => false,
 			'js_logs' => false,
 			'parsing_engine' => 'HtmlDomParser',
 			'selector_ahead' => false,
-			'selector' => '.entry-content, .gallery, .mgl-gallery, .wp-block-gallery,  .wp-block-image',
+			'selector' => '.entry-content, .gallery, .mgl-root, .wp-block-gallery,  .wp-block-image',
 			'anti_selector' => '.blog, .archive, .emoji, .attachment-post-image, .no-lightbox',
 			'map_engine' => 'googlemaps',
 			'googlemaps_token' => '',

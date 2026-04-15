@@ -12,13 +12,21 @@ class Meow_MWL_Exif {
 	}
 
 	static function convert_gps( $exifCoord, $hemi ) {
-		if( !is_array( $exifCoord ) ) return 0;
 
-		$degrees = count( $exifCoord ) > 0 ? Meow_MWL_Exif::gps2Num( $exifCoord[0] ) : 0;
-		$minutes = count( $exifCoord ) > 1 ? Meow_MWL_Exif::gps2Num( $exifCoord[1] ) : 0;
-		$seconds = count( $exifCoord ) > 2 ? Meow_MWL_Exif::gps2Num( $exifCoord[2] ) : 0;
-		$flip = ( $hemi == 'W' or $hemi == 'S' ) ? -1 : 1;
-		return $flip * ( $degrees + $minutes / 60 + $seconds / 3600 );
+		if( is_array( $exifCoord ) ) {
+			$degrees = count( $exifCoord ) > 0 ? Meow_MWL_Exif::gps2Num( $exifCoord[0] ) : 0;
+			$minutes = count( $exifCoord ) > 1 ? Meow_MWL_Exif::gps2Num( $exifCoord[1] ) : 0;
+			$seconds = count( $exifCoord ) > 2 ? Meow_MWL_Exif::gps2Num( $exifCoord[2] ) : 0;
+			$flip = ( $hemi == 'W' or $hemi == 'S' ) ? -1 : 1;
+			return $flip * ( $degrees + $minutes / 60 + $seconds / 3600 );
+		}
+
+		if ( is_float( $exifCoord ) ) {
+			return $exifCoord;
+		}
+
+
+		return null;
 	}
 
 	static function get_gps_data( $id, &$meta ) {
@@ -28,8 +36,9 @@ class Meow_MWL_Exif {
 
 		$file = get_attached_file( $id );
 		$pp = pathinfo( $file );
-		if ( !in_array( strtolower( $pp['extension'] ), array( 'jpg', 'jpeg', 'tiff' ) ) )
-			return false;
+
+		if ( !in_array( strtolower( $pp['extension'] ), array( 'jpg', 'jpeg', 'tiff' ) ) ) return false;
+
 		$exif = @exif_read_data( $file );
 		if ( !$exif || !isset( $exif["GPSLongitude"] ) || !isset( $exif['GPSLongitudeRef'] )
 			|| !isset( $exif["GPSLatitude"] ) || !isset( $exif['GPSLatitudeRef'] ) ) {
@@ -37,10 +46,19 @@ class Meow_MWL_Exif {
 			wp_update_attachment_metadata( $id, $meta );
 			return false;
 		}
-		$meta['image_meta']['geo_latitude'] = Meow_MWL_Exif::convert_gps($exif["GPSLatitude"], $exif['GPSLatitudeRef']);
-		$meta['image_meta']['geo_longitude'] = Meow_MWL_Exif::convert_gps($exif["GPSLongitude"], $exif['GPSLongitudeRef']);
-		$meta['image_meta']['geo_coordinates'] = $meta['image_meta']['geo_latitude']
-			. ',' . $meta['image_meta']['geo_longitude'];
+
+		$latitude  = Meow_MWL_Exif::convert_gps( $exif["GPSLatitude"], $exif['GPSLatitudeRef'] );
+		$longitude = Meow_MWL_Exif::convert_gps( $exif["GPSLongitude"], $exif['GPSLongitudeRef'] );
+
+		if ( $latitude === null || $longitude === null ) {
+			$meta['image_meta']['geo_coordinates'] = "";
+			wp_update_attachment_metadata( $id, $meta );
+			return false;
+		}
+
+		$meta['image_meta']['geo_latitude']    = $latitude;
+		$meta['image_meta']['geo_longitude']   = $longitude;
+		$meta['image_meta']['geo_coordinates'] = $meta['image_meta']['geo_latitude'] . ',' . $meta['image_meta']['geo_longitude'];
 
 		wp_update_attachment_metadata( $id, $meta );
 

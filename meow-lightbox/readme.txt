@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, photoswipe, photography
 Donate link: https://www.patreon.com/meowapps
 Requires at least: 6.0
 Tested up to: 6.9
-Stable tag: 5.5.1
+Stable tag: 5.5.2
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -152,6 +152,16 @@ Yes! Use arrow keys to navigate, ESC to close, and keyboard shortcuts for all co
 Meow Lightbox works great with translation plugins and multilingual setups.
 
 == Changelog ==
+
+= 5.5.2 (2026/04/15) =
+* Fix: Resolved an issue where dynamic cache keys could exceed the WordPress transient name limit by using MD5 hashing.
+* Fix: Resolved an issue where scrolling with the mouse wheel on the Description field was not working correctly.
+* Add: Support for displaying EXIF data on Meow Gallery images without requiring REST calls, using a new dynamic fetch approach.
+* Add: A "Reset GPS" button in the Meow GPS widget, positioned below the coordinates for easy access.
+* Update: Improved support for float-format and inverse time offset GPS EXIF data.
+* 🎵 Discuss with others about Meow Lightbox on [the Discord](https://discord.gg/bHDGh38).
+* 🌴 Keep us motivated with [a little review here](https://wordpress.org/support/plugin/meow-lightbox/reviews/). Thank you!
+* 🥰 If you want to help us, check our [Patreon](https://www.patreon.com/meowapps). Thank you!
 
 = 5.5.1 (2026/03/09) =
 * Update: Improved image performance by using hardware-accelerated CSS on image elements.

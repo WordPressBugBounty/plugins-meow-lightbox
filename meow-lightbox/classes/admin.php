@@ -8,6 +8,7 @@ class Meow_MWL_Admin extends MeowKit_MWL_Admin {
 		$this->core = $core;
 
 		if ( is_admin() ) {
+			add_action( 'admin_init', array( $this, 'handle_reset_gps' ) );
 			add_action( 'admin_menu', array( $this, 'app_menu' ) );
 			add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 
@@ -53,17 +54,29 @@ class Meow_MWL_Admin extends MeowKit_MWL_Admin {
 			'attachment', 'side', 'low' );
 	}
 
+	function handle_reset_gps() {
+		if ( isset( $_GET['mwl_reset_gps'] ) && current_user_can( 'manage_options' ) ) {
+			$id = intval( $_GET['mwl_reset_gps'] );
+			if ( $id ) {
+				$meta = wp_get_attachment_metadata( $id );
+				if ( $meta && isset( $meta['image_meta'] ) ) {
+					unset( $meta['image_meta']['geo_coordinates'] );
+					unset( $meta['image_meta']['geo_latitude'] );
+					unset( $meta['image_meta']['geo_longitude'] );
+					wp_update_attachment_metadata( $id, $meta );
+				}
+			}
+			wp_safe_redirect( remove_query_arg( 'mwl_reset_gps' ) );
+			exit;
+		}
+	}
+
 	function metabox_meow_gps( $post ) {
 		$meta = wp_get_attachment_metadata( $post->ID );
 		if ( !isset( $meta['image_meta']['geo_coordinates'] ) ) {
 			Meow_MWL_Exif::get_gps_data( $post->ID, $meta );
 		}
 
-		if ( !isset( $meta['image_meta']['geo_coordinates'] ) ) {
-			echo esc_attr( "No coordinates." );
-			return;
-		}
-		
 		$gps = apply_filters( 'mwl_img_gps', $meta['image_meta']['geo_coordinates'],	$post->ID, $meta );
 		if ( empty( $gps ) ) {
 			echo esc_attr( "No coordinates." );
@@ -73,6 +86,10 @@ class Meow_MWL_Admin extends MeowKit_MWL_Admin {
 			$google_maps_url = 'https://www.google.com/maps/search/?api=1&query=' . urlencode( $gps );
 			echo '<p><a href="' . esc_url( $google_maps_url ) . '" target="_blank" class="button button-secondary">' . esc_html__( 'Open on Google Maps', 'meow-lightbox' ) . '</a></p>';
 		}
+
+		//Add a button to reset the GPS data, in case the user has updated the image metadata after uploading it
+		$reset_url = add_query_arg( 'mwl_reset_gps', $post->ID );
+		echo '<p><a href="' . esc_url( $reset_url ) . '" class="button-link-delete">' . esc_html__( 'Reset GPS Data', 'meow-lightbox' ) . '</a></p>';
 	}
 
 	public function mwl_settings() {

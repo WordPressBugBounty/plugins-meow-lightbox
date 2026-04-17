@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, photoswipe, photography
 Donate link: https://www.patreon.com/meowapps
 Requires at least: 6.0
 Tested up to: 6.9
-Stable tag: 5.5.2
+Stable tag: 5.5.3
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -153,7 +153,7 @@ Meow Lightbox works great with translation plugins and multilingual setups.
 
 == Changelog ==
 
-= 5.5.2 (2026/04/15) =
+= 5.5.3 (2026/04/17) =
 * Fix: Resolved an issue where dynamic cache keys could exceed the WordPress transient name limit by using MD5 hashing.
 * Fix: Resolved an issue where scrolling with the mouse wheel on the Description field was not working correctly.
 * Add: Support for displaying EXIF data on Meow Gallery images without requiring REST calls, using a new dynamic fetch approach.

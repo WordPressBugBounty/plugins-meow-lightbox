@@ -25,14 +25,13 @@ class Meow_MWL_Core {
 		add_action( 'save_post', array( $this, 'on_save_post' ), 10, 3 );
 		//add_filter( 'mgl_force_rewrite_mwl_data', array( $this, 'mgl_force_rewrite_mwl_data' ), 10, 1 );
 		add_action( 'edit_attachment', array( $this, 'edit_attachment' ), 10, 1 );
-		
+
+		if ( class_exists( 'MeowPro_MWL_Core' ) ) {
+			$this->map = new MeowPro_MWL_Core( $this );
+		}
 
 		
-		if ( !is_admin() ) {
-
-			if ( class_exists( 'MeowPro_MWL_Core' ) ) {
-				$this->map = new MeowPro_MWL_Core( $this );
-			}
+		if ( !is_admin() ) {			
 
 			// The Lightbox should be completely off if the request is asynchronous
 			MeowKit_MWL_Helpers::is_rest() && new Meow_MWL_Rest( $this );

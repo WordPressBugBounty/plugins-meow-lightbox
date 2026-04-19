@@ -52,7 +52,6 @@ class Meow_MWL_Core {
 				// Read the whole page, and add the mwl_data in the head.
 				add_action( 'init', array( $this, 'start_ob' ) );
 				add_action( 'shutdown', array( $this, 'end_ob' ), 100 );
-				$this->renderingMode = 'rewrite';
 			}
 			// MODE: Standard (Non Responsive Images)
 			else {
@@ -699,7 +698,7 @@ class Meow_MWL_Core {
 
 		// Skip if element was marked as ignored by lightbox_ignore_element
 		if ( $isIgnored ) {
-			return $this->renderingMode === 'replace' ? false : $buffer;
+			return false;
 		}
 	
 		// Check for a WordPress media ID in the classes.
@@ -802,13 +801,18 @@ class Meow_MWL_Core {
 				array_push( $this->images, $mediaId );
 			}
 
-			
-			return $this->renderingMode === 'replace'
-				? str_replace( trim( $from, "</> " ), trim( $element, "</> " ), $buffer )
-				: 1;
+			// In replace mode we need to replace the original HTML string with the modified one in the buffer.
+			if ( $this->renderingMode === 'replace' ) {
+				return str_replace( trim( $from, "</> " ), trim( $element, "</> " ), $buffer );
+			}
+
+			// In rewrite mode, we modify the DOM element directly, so we just return true to indicate a change was made.
+			if ( $this->renderingMode === 'rewrite' ) {
+				return true;
+			}
 		}
 		
-		return $this->renderingMode === 'replace' ? false : $buffer;
+		return false;
 	}
 
 	function lightboxify_component( $html ) {
@@ -879,89 +883,164 @@ class Meow_MWL_Core {
 	}
 
 	function lightboxify( $buffer ) {
-		if ( !isset( $buffer ) || trim( $buffer ) === '' )
+		if ( !isset( $buffer ) || trim( $buffer ) === '' ) {
 			return $buffer;
-	
-		// Initialize engine
-		$html = null;
-		$hasChanges = false;
-		if ( $this->parsingEngine === 'HtmlDomParser' ) {
-			$html = new HtmlDomParser();
+		}
 
-			$charset = defined( 'DEFAULT_TARGET_CHARSET' ) ? DEFAULT_TARGET_CHARSET : 'UTF-8';
-			$html = $html->str_get_html( $buffer, true, true, $charset, false );
+		// OB mode is disabled
+		if ( $this->renderingMode === 'replace' ) {
+			return $this->lightboxify_replace( $buffer );
 		}
-	
-		if( !$html ){
-			$this->log( '⚠️ HtmlDomParser wasn\'t used. Trying DiDom.' );
-			$html = new Document();
-			if ( defined( 'LIBXML_HTML_NOIMPLIED' ) && defined( 'LIBXML_HTML_NODEFDTD' ) )
-				$html->loadHtml( $buffer, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
-			else
-				$html->loadHtml( $buffer, 0 );
+
+		// OB mode is enabled
+		if ( $this->renderingMode === 'rewrite' ) {
+			return $this->lightboxify_rewrite( $buffer );
 		}
-		
+
+		throw new Exception( 'Invalid rendering mode: ' . $this->renderingMode );
+	}
+
+	/**
+	 * Replace mode: Modifies the buffer string directly via str_replace.
+	 * Used in standard (non-OB) mode.
+	 */
+	function lightboxify_replace( $buffer ) {
+		$html = $this->init_parser( $buffer );
 		if ( !$html ) {
-			$this->log( '🪲 the DOM is empty.' );
 			return $buffer;
 		}
 
-		// Mark elements that should be ignored based on anti-selectors
 		$this->lightbox_ignore_element( $html );
 		$this->lightboxify_component( $html );
 
-		$classes = $this->get_option( 'selector', '.entry-content, .gallery, .mgl-root, .wp-block-gallery' );
-		$classes = explode( ',', $classes );
-		$classes = array_map( 'trim', $classes );
+		$selectors = $this->get_selectors();
+		foreach ( $selectors as $selector ) {
+			$elements = $html->find( "$selector img, img$selector, $selector video, video$selector" );
+			$this->log_elements_found( $selector, $elements );
 
-		if ( empty( $classes ) ) {
-			$this->log( '🪲 No classes were found in the selector.' );
-		}
-	
-		foreach ( $classes as $class ) {
-
-			// Include both img and video elements (and direct child selectors)
-			$elements = $html->find("$class img, img$class, $class video, video$class");
-			
-			if ( empty( $elements ) ) {
-				$this->log( '🪲 No elements were found in the selector for the class: ' . $class );
-			} else {
-				$this->log( '🟢 ' . count( $elements ) . ' elements were found in the selector for the class: ' . $class );
-			}
-			
 			foreach ( $elements as $element ) {
-				if ( $this->renderingMode === 'replace' ) {
-					$buffer = $this->lightboxify_element( $element, $buffer );
-				}
-				else {
-					$hasChanges = $this->lightboxify_element( $element, $buffer ) || $hasChanges;
+				$result = $this->lightboxify_element( $element, $buffer );
+				if ( $result !== false ) {
+					$buffer = $result;
 				}
 			}
 		}
-		
-	
-		if ( $this->isObMode ) {
-			$matches = preg_split('/(<body.*?>)/i', $html, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-	
-			// If the body tag is not found, we can't do anything.
-			if ( count( $matches ) < 2 ) {
-				$this->log( '⚠️ Output Buffering was used on a non HTML response. Returning the current buffer.' );
-				return $buffer;
-			}
-	
-			$mwlData = $this->write_mwl_data( true );
-	
-			$head = isset( $matches[0] ) ? $matches[0] : '';
-			$body = isset( $matches[1] ) ? $matches[1] : '';
-			$footer = isset( $matches[2] ) ? $matches[2] : '';
-			$html = $head . $body . $mwlData . $footer;
-		}
-	
-		if ( $this->renderingMode === 'replace' ) {
+
+		return $buffer;
+	}
+
+	/**
+	 * Rewrite mode: Modifies the DOM objects and serializes the DOM back to HTML.
+	 * Used in Output Buffering (OB) mode.
+	 */
+	function lightboxify_rewrite( $buffer ) {
+		// Ensure that the current buffer is post content with a HTML structure before we attempt anything.
+		// This might just be a REST API response or something else that we don't want to mess with.
+		if ( strpos( $buffer, '<html' ) === false || strpos( $buffer, '<body' ) === false ) {
+			$this->log( '⚠️ The buffer does not contain a full HTML structure. Skipping lightboxification.' );
 			return $buffer;
 		}
-		
-		return $hasChanges ? $html : $buffer;
+
+		$html = $this->init_parser( $buffer );
+		if ( !$html ) {
+			return $buffer;
+		}
+
+		$this->lightbox_ignore_element( $html );
+		$this->lightboxify_component( $html );
+
+		$selectors = $this->get_selectors();
+		$hasChanges = false;
+
+		foreach ( $selectors as $selector ) {
+			$elements = $html->find( "$selector img, img$selector, $selector video, video$selector" );
+			$this->log_elements_found( $selector, $elements );
+
+			foreach ( $elements as $element ) {
+				if ( $this->lightboxify_element( $element, $buffer ) ) {
+					$hasChanges = true;
+				}
+			}
+		}
+
+		if ( !$hasChanges ) {
+			return $buffer;
+		}
+
+		// Serialize the modified DOM back to HTML
+		if ( $this->parsingEngine === 'HtmlDomParser' ) {
+			$buffer = $html->save();
+		} else {
+			// DiDom
+			$buffer = $html->html();
+		}
+
+		// Inject the mwl_data script before the closing </body> tag
+		$mwlData = $this->write_mwl_data( true );
+		if ( strpos( $buffer, '</body>' ) !== false ) {
+			$buffer = str_replace( '</body>', $mwlData . '</body>', $buffer );
+		} else {
+			$this->log( '⚠️ No </body> tag found in the buffer. Unable to inject mwl_data.' );
+			$buffer .= $mwlData;
+		}
+
+		return $buffer;
+	}
+
+	/**
+	 * Initialize the HTML parser based on the configured engine.
+	 */
+	private function init_parser( $buffer ) {
+		$html = null;
+
+		if ( $this->parsingEngine === 'HtmlDomParser' ) {
+			$parser = new HtmlDomParser();
+			$charset = defined( 'DEFAULT_TARGET_CHARSET' ) ? DEFAULT_TARGET_CHARSET : 'UTF-8';
+			$html = $parser->str_get_html( $buffer, true, true, $charset, false );
+		}
+
+		if ( !$html ) {
+			$this->log( '⚠️ HtmlDomParser wasn\'t used. Trying DiDom.' );
+			$html = new Document();
+			if ( defined( 'LIBXML_HTML_NOIMPLIED' ) && defined( 'LIBXML_HTML_NODEFDTD' ) ) {
+				$html->loadHtml( $buffer, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+			} else {
+				$html->loadHtml( $buffer, 0 );
+			}
+		}
+
+		if ( !$html ) {
+			$this->log( '🪲 the DOM is empty.' );
+			return null;
+		}
+
+		return $html;
+	}
+
+	/**
+	 * Get the CSS selectors for finding lightbox elements.
+	 */
+	private function get_selectors() {
+		$selectors = $this->get_option( 'selector', '.entry-content, .gallery, .mgl-root, .wp-block-gallery' );
+		$selectors = explode( ',', $selectors );
+		$selectors = array_map( 'trim', $selectors );
+
+		if ( empty( $selectors ) ) {
+			$this->log( '🪲 No classes were found in the selector.' );
+		}
+
+		return $selectors;
+	}
+
+	/**
+	 * Log the number of elements found for a selector.
+	 */
+	private function log_elements_found( $selector, $elements ) {
+		if ( empty( $elements ) ) {
+			$this->log( '🪲 No elements were found in the selector for the class: ' . $selector );
+		} else {
+			$this->log( '🟢 ' . count( $elements ) . ' elements were found in the selector for the class: ' . $selector );
+		}
 	}
 
 	public function meow_gallery_created( $atts, $image_ids, $layout ) {

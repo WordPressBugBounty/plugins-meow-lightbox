@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, photoswipe, photography
 Donate link: https://www.patreon.com/meowapps
 Requires at least: 6.0
 Tested up to: 6.9
-Stable tag: 5.5.4
+Stable tag: 5.5.5
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -152,6 +152,10 @@ Yes! Use arrow keys to navigate, ESC to close, and keyboard shortcuts for all co
 Meow Lightbox works great with translation plugins and multilingual setups.
 
 == Changelog ==
+
+= 5.5.5 (2026/04/25) =
+* Update: Refreshed the welcome message screen with a new layout.
+* Update: Better UI/UX.
 
 = 5.5.4 (2026/04/19) =
 * Add: Question icon to the Tutorial button in the header.

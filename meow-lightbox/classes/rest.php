@@ -64,107 +64,73 @@ class Meow_MWL_Rest
   	function rest_regenerate_mwl_data( $request ) {
 
 		$images = $request->get_param( 'images' );
-		$page_url = $request->get_param( 'page_url' ); // Get the page URL from the request
+		$page_url = $request->get_param( 'page_url' );
+		$cache_enabled = !$this->core->get_option( 'disable_cache' );
 
 		$data = [];
 
-		foreach( $images as $image ) {
+		// Check page cache first if enabled
+		$page_cache = null;
+		if ( $cache_enabled && $page_url ) {
+			$page_cache = $this->core->get_page_dynamic_cache( $page_url );
+		}
 
-			$found = false;
-
-			// Try by direct ID.
-			if ( !$found ) {
-				$id = intval( $image['id'] );
-				if ( $id ) {
-					$is_attachment = get_post_type( $id ) === 'attachment';
-					if ( $is_attachment ) {
-						$found = true;
-					}
-				}
-			}
-
-			if( !empty( $image['url'] ) ) {
-				
-				// Try by cleaned URL (removing size suffixes).
-				$pattern = '/[_-]\d+x\d+(?=\.[a-z]{3,4}$)/';
-				$clean_url = preg_replace( $pattern, '', $image['url'] );
-				
-				if ( !$found ) {
-					$id = attachment_url_to_postid( $clean_url );
-					if ( $id ) {
-						$is_attachment = get_post_type( $id ) === 'attachment';
-						if ( $is_attachment ) {
-							$found = true;
-						}
-					}
-				}
-
-				// Try by attachment URL.
-				if ( !$found ) {
-					$id = attachment_url_to_postid( $image['url'] );
-					if ( $id ) {
-						$is_attachment = get_post_type( $id ) === 'attachment';
-						if ( $is_attachment ) {
-							$found = true;
-						}
-					}
-				}
-
-				// Try by resolving the image ID (handles thumbnails and CDN URLs).
-				if ( !$found ) {
-					$id = $this->core->resolve_image_id( $image['url'] );
-					if ( $id ) {
-						$is_attachment = get_post_type( $id ) === 'attachment';
-						if ( $is_attachment ) {
-							$found = true;
-						}
-					}
-				}
-			}
-
-
-			// Not found, skip.
-			if( !$found ) {
+		if( !empty( $images ) ) 
+		{
+			foreach( $images as $image ) {
+				// Quick check: if image has an ID and it's in cache, use it directly
+				$id = isset( $image['id'] ) ? intval( $image['id'] ) : 0;
+				if ( $id && $page_cache && isset( $page_cache[$id] ) ) {
 					$data[] = [
-						'url' => $image['url'],
+						'url' => $image['url'] ?? null,
 						'id' => $id,
-						'data' => [ 'success' => false, 'message' => 'Image not found or is not an attachment.' ]
+						'data' => $page_cache[$id]
 					];
 					continue;
 				}
 
-				$res =  $this->core->get_exif_info( $id );
+				// Need to resolve the ID (handles cases where ID is missing or invalid)
+				$id = $this->core->resolve_image_id_from_data( $image );
+				
+				// Check cache again with resolved ID
+				if ( $page_cache && isset( $page_cache[$id] ) ) {
+					$data[] = [
+						'url' => $image['url'] ?? null,
+						'id' => $id,
+						'data' => $page_cache[$id]
+					];
+					continue;
+				}
 
+				// Not in cache, fetch EXIF info
+				$res = $this->core->get_exif_info( $id );
 				$data[] = [
-					'url' => $image['url'],
+					'url' => $image['url'] ?? null,
 					'id' => $id,
 					'data' => $res
 				];
+			}
 		}
 
-		$response = [ 'success' => true, 'data' => $data ];
-		
-		// Update the page-level dynamic cache for the current page
-		// This converts the response format to the mwl_data format
-		if ( !$this->core->get_option( 'disable_cache' ) && $page_url ) {
-			$page_cache = [];
+		// Update the page-level dynamic cache with any new data
+		if ( $cache_enabled && $page_url ) {
+			$new_cache_entries = [];
 			foreach ( $data as $item ) {
 				if ( isset( $item['id'] ) && isset( $item['data'] ) && $item['data']['success'] !== false ) {
-					$page_cache[$item['id']] = $item['data'];
+					// Only add if not already in cache
+					if ( !$page_cache || !isset( $page_cache[$item['id']] ) ) {
+						$new_cache_entries[$item['id']] = $item['data'];
+					}
 				}
 			}
 			
-			if ( !empty( $page_cache ) ) {
-				// Get existing page cache and merge with new data
-				$existing_cache = $this->core->get_page_dynamic_cache( $page_url );
-				if ( $existing_cache ) {
-					$page_cache = array_replace( $existing_cache, $page_cache );
-				}
-
-				$this->core->set_page_dynamic_cache( $page_cache, $page_url );
+			if ( !empty( $new_cache_entries ) ) {
+				$updated_cache = $page_cache ? array_replace( $page_cache, $new_cache_entries ) : $new_cache_entries;
+				$this->core->set_page_dynamic_cache( $updated_cache, $page_url );
 			}
 		}
 
+		$response = [ 'success' => true, 'data' => $data ];
 		return new WP_REST_Response( $response, 200 );
 	}
 

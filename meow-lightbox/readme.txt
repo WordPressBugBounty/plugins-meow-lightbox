@@ -3,8 +3,8 @@ Contributors: TigrouMeow
 Tags: lightbox, responsive, exif, photoswipe, photography
 Donate link: https://www.patreon.com/meowapps
 Requires at least: 6.0
-Tested up to: 6.9
-Stable tag: 5.5.6
+Tested up to: 7.0
+Stable tag: 5.5.7
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -152,6 +152,12 @@ Yes! Use arrow keys to navigate, ESC to close, and keyboard shortcuts for all co
 Meow Lightbox works great with translation plugins and multilingual setups.
 
 == Changelog ==
+
+= 5.5.7 (2026/05/30) =
+* Update: Fullscreen is now a toolbar action, with "Start Fullscreen" available as a secondary option for mobile and desktop.
+* Update: Date and Time are now separate settings in EXIF metadata display.
+* Fix: Images without a lightbox ID but with a known cached URL now correctly load their metadata.
+* Update: Simplified and refactored EXIF display functions.
 
 = 5.5.6 (2026/05/07) =
 * Add: Dynamic aria-label updates for lightboxified images.

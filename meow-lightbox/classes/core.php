@@ -175,8 +175,9 @@ class Meow_MWL_Core {
 					'wordpress_big_image' => $this->get_option( 'wordpress_big_image', false ),
 					'right_click_protection' => !$this->get_option( 'right_click', false ),
 					'magnification' => $this->get_option( 'magnification', true ),
-					'full_screen_desktop' => $this->get_option( 'full_screen_desktop', false ),
-					'full_screen_mobile' => $this->get_option( 'full_screen_mobile', false ),
+					'full_screen' => $this->get_option( 'full_screen', false ),
+					'full_screen_start_desktop' => $this->get_option( 'full_screen_start_desktop', false ),
+					'full_screen_start_mobile' => $this->get_option( 'full_screen_start_mobile', false ),
 					'anti_selector' => $this->get_option( 'anti_selector', '.blog, .archive, .emoji, .attachment-post-image, .no-lightbox' ),
 					'preloading' => $this->get_option( 'preloading', false ),
 					'download_link' => $this->get_option( 'download_link', false ),
@@ -188,6 +189,7 @@ class Meow_MWL_Core {
 						'camera' => $this->get_option( 'exif_camera', true ),
 						'lens' => $this->get_option( 'exif_lens', false ),
 						'date' => $this->get_option( 'exif_date', false ),
+						'time' => $this->get_option( 'exif_time', false ),
 						'date_timezone' => $this->get_option( 'exif_date_timezone', false ),
 						'shutter_speed' => $this->get_option( 'exif_shutter_speed', true ),
 						'aperture' => $this->get_option( 'exif_aperture', true ),
@@ -306,7 +308,22 @@ class Meow_MWL_Core {
 	 * HELPERS
 	 ******************************************************************************/
 
+	function is_valid_attachment_id( $id ) {
+		$id = intval( $id );
+		if ( !$id ) {
+			return false;
+		}
+		return get_post_type( $id ) === 'attachment';
+	}
+
 	function get_exif_info( $id ) {
+		// Validate attachment ID first
+		if ( !$this->is_valid_attachment_id( $id ) ) {
+			return array(
+				'success' => false,
+				'message' => 'Invalid attachment ID.'
+			);
+		}
 
 		// The transient should only match a certain media entry with three given options, as only those three options
 		// has an influence on the process that follows
@@ -482,8 +499,18 @@ class Meow_MWL_Core {
 				}
 			}
 
-			$date_format = get_option( 'date_format' ) . ' - ' . get_option( 'time_format' );
-			$date = date( $date_format, $timestamp );
+			// Build date format based on enabled options
+			$show_date = $this->get_option( 'exif_date', false );
+			$show_time = $this->get_option( 'exif_time', false );
+			$date_parts = array();
+			if ( $show_date ) {
+				$date_parts[] = get_option( 'date_format' );
+			}
+			if ( $show_time ) {
+				$date_parts[] = get_option( 'time_format' );
+			}
+			$date_format = implode( ' - ', $date_parts );
+			$date = $date_format ? date( $date_format, $timestamp ) : '';
 		}
 
 		// Check if the Meow_MWL_Filters filters exist - Try with mwl_img_focal_length
@@ -606,6 +633,48 @@ class Meow_MWL_Core {
 	function resolve_image_id( $url ) {
 		$url = $this->convert_cdn( $url );	
 		return $this->resolve_from_database( $url );	
+	}
+
+	/**
+	 * Resolve image ID from image data (id and/or url).
+	 * Tries multiple strategies: direct ID, cleaned URL, original URL, and database resolve.
+	 * 
+	 * @param array $image Array with 'id' and/or 'url' keys.
+	 * @return int|null The attachment ID or null if not found.
+	 */
+	function resolve_image_id_from_data( $image ) {
+		// Try by direct ID first
+		$id = isset( $image['id'] ) ? intval( $image['id'] ) : 0;
+		if ( $this->is_valid_attachment_id( $id ) ) {
+			return $id;
+		}
+
+		if ( empty( $image['url'] ) ) {
+			return null;
+		}
+
+		// Try by cleaned URL (removing size suffixes)
+		$pattern = '/[_-]\d+x\d+(?=\.[a-z]{3,4}$)/';
+		$clean_url = preg_replace( $pattern, '', $image['url'] );
+		
+		$id = attachment_url_to_postid( $clean_url );
+		if ( $this->is_valid_attachment_id( $id ) ) {
+			return $id;
+		}
+
+		// Try by original attachment URL
+		$id = attachment_url_to_postid( $image['url'] );
+		if ( $this->is_valid_attachment_id( $id ) ) {
+			return $id;
+		}
+
+		// Try by resolving (handles thumbnails and CDN URLs)
+		$id = $this->resolve_image_id( $image['url'] );
+		if ( $this->is_valid_attachment_id( $id ) ) {
+			return $id;
+		}
+
+		return null;
 	}
 
 	/******************************************************************************
@@ -1062,7 +1131,11 @@ class Meow_MWL_Core {
 	function get_mwl_data() {
 		$images_info = [];	
 		foreach ( $this->images as $image ) {
-			$images_info[$image] = $this->get_exif_info( $image );
+			$info = $this->get_exif_info( $image );
+			// Only include successful responses
+			if ( isset( $info['success'] ) && $info['success'] === true ) {
+				$images_info[$image] = $info;
+			}
 		}
 		return $images_info;
 	}
@@ -1085,8 +1158,17 @@ class Meow_MWL_Core {
 		}
 		
 		if ( !empty( $images_info ) ) {
+			// Build URL → ID index for fast JS lookups
+			$url_index = [];
+			foreach ( $images_info as $id => $info ) {
+				if ( isset( $info['file'] ) && !empty( $info['file'] ) ) {
+					$url_index[$info['file']] = $id;
+				}
+			}
+
 			$html = '<script type="application/javascript" id="mwl-data-script">' . PHP_EOL;
 			$html .= 'var mwl_data = ' . json_encode( $images_info ) . ';' . PHP_EOL;
+			$html .= 'var mwl_url_index = ' . json_encode( $url_index ) . ';' . PHP_EOL;
 			// Add flag to indicate if we have complete cached dynamic data
 			$html .= 'var mwl_data_has_dynamic_cache = ' . ( $has_dynamic_cache ? 'true' : 'false' ) . ';' . PHP_EOL;
 			$html .= '</script>' . PHP_EOL;
@@ -1176,6 +1258,7 @@ class Meow_MWL_Core {
 			'exif_author' => false,
 			'exif_iso' => true,
 			'exif_date' => false,
+			'exif_time' => false,
 			'exif_date_timezone' => false,
 			'exif_keywords' => false,
 			'metadata_toggle' => false,
@@ -1183,9 +1266,9 @@ class Meow_MWL_Core {
 			'caption_origin' => 'caption',
 			'caption_ellipsis' => true,
 			'magnification' => true,
-			'full_screen_desktop' => false,
-			'full_screen_mobile' => false,
-			'right_click' => false,
+			'full_screen' => false,
+			'full_screen_start_desktop' => false,
+			'full_screen_start_mobile' => false,
 			
 			'social_sharing' => false,
 			'social_sharing_facebook' => true,

@@ -1,0 +1,144 @@
+# Chinese (Simplified) translation for Meow Lightbox
+# Copyright (C) 2026 Meow Apps
+# This file is distributed under the same license as the Meow Lightbox package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Meow Lightbox\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-07 06:01+0000\n"
+"PO-Revision-Date: 2026-06-07 15:00+0000\n"
+"Last-Translator: Meow Apps\n"
+"Language-Team: Chinese (Simplified)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../classes/admin.php:87
+msgid "Open on Google Maps"
+msgstr "在谷歌地图中打开"
+
+#: ../classes/admin.php:92
+msgid "Reset GPS Data"
+msgstr "重置GPS数据"
+
+#: app/admin/i18n.js
+msgid "Gallery"
+msgstr "图库"
+
+#: app/admin/i18n.js
+msgid "Dashboard"
+msgstr "仪表盘"
+
+#: app/admin/i18n.js
+msgid "Zoom image"
+msgstr "缩放图片"
+
+#: app/admin/i18n.js
+msgid "Previous"
+msgstr "上一张"
+
+#: app/admin/i18n.js
+msgid "Next"
+msgstr "下一张"
+
+#: app/admin/i18n.js
+msgid "Actions"
+msgstr "操作"
+
+#: app/admin/i18n.js
+msgid "Start Slideshow"
+msgstr "开始幻灯片"
+
+#: app/admin/i18n.js
+msgid "Stop Slideshow"
+msgstr "停止幻灯片"
+
+#: app/admin/i18n.js
+msgid "Show Info"
+msgstr "显示信息"
+
+#: app/admin/i18n.js
+msgid "Hide Info"
+msgstr "隐藏信息"
+
+#: app/admin/i18n.js
+msgid "Show Image"
+msgstr "显示图片"
+
+#: app/admin/i18n.js
+msgid "Show on Map"
+msgstr "在地图上显示"
+
+#: app/admin/i18n.js
+msgid "Show Metadata"
+msgstr "显示元数据"
+
+#: app/admin/i18n.js
+msgid "Hide Metadata"
+msgstr "隐藏元数据"
+
+#: app/admin/i18n.js
+msgid "Download"
+msgstr "下载"
+
+#: app/admin/i18n.js
+msgid "Close"
+msgstr "关闭"
+
+#: app/admin/i18n.js
+msgid "Image caption and metadata"
+msgstr "图片标题和元数据"
+
+#: app/admin/i18n.js
+msgid "Share"
+msgstr "分享"
+
+#: app/admin/i18n.js
+msgid "Fullscreen"
+msgstr "全屏"
+
+#: app/admin/i18n.js
+msgid "Exit Fullscreen"
+msgstr "退出全屏"
+
+#: app/admin/i18n.js
+msgid "Camera model"
+msgstr "相机型号"
+
+#: app/admin/i18n.js
+msgid "Lens"
+msgstr "镜头"
+
+#: app/admin/i18n.js
+msgid "Focal length"
+msgstr "焦距"
+
+#: app/admin/i18n.js
+msgid "Shutter speed"
+msgstr "快门速度"
+
+#: app/admin/i18n.js
+msgid "Aperture"
+msgstr "光圈"
+
+#: app/admin/i18n.js
+msgid "ISO"
+msgstr "ISO"
+
+#: app/admin/i18n.js
+msgid "Date taken"
+msgstr "拍摄日期"
+
+#: app/admin/i18n.js
+msgid "Keywords"
+msgstr "关键词"
+
+#: app/admin/i18n.js
+msgid "Copyright"
+msgstr "版权"
+
+#: app/admin/i18n.js
+msgid "Author"
+msgstr "作者"

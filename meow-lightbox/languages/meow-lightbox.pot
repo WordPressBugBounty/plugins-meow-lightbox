@@ -1,0 +1,153 @@
+# Copyright (C) 2026 Meow Lightbox
+# This file is distributed under the same license as the Meow Lightbox package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Meow Lightbox\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-06-28 11:52+0000\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../classes/admin.php:87
+msgid "Open on Google Maps"
+msgstr ""
+
+#: ../classes/admin.php:92
+msgid "Reset GPS Data"
+msgstr ""
+
+#: ../classes/admin.php:139
+msgid "Meow Lightbox will not work properly if your permalinks are set up on \"Plain\". Please pick a dynamic structure for your permalinks (Settings > Permalinks)."
+msgstr ""
+
+#: ../classes/admin.php:146
+msgid "The function <i>exif_read_data</i> is not available on your server, but it is required by the Meow Lightbox. Please ask your hosting service to enable the <i>php_exif</i> module."
+msgstr ""
+
+#. JavaScript strings from app/admin/i18n.js
+
+#: app/admin/i18n.js
+msgid "Gallery"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Dashboard"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Zoom image"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Previous"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Next"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Actions"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Start Slideshow"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Stop Slideshow"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Show Info"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Hide Info"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Show Image"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Show on Map"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Show Metadata"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Hide Metadata"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Download"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Close"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Image caption and metadata"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Share"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Fullscreen"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Exit Fullscreen"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Camera model"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Lens"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Focal length"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Shutter speed"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Aperture"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "ISO"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Date taken"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Keywords"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Copyright"
+msgstr ""
+
+#: app/admin/i18n.js
+msgid "Author"
+msgstr ""

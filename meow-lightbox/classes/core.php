@@ -65,8 +65,9 @@ class Meow_MWL_Core {
 	}
 
 	public function init() {
+		load_plugin_textdomain( MWL_DOMAIN, false, basename( MWL_PATH ) . '/languages' );
+		
 		if ( is_admin() ) {
-			load_plugin_textdomain( MWL_DOMAIN, false, MWL_PATH . '/languages' );
 			new Meow_MWL_Admin( $this );
 		}
 
@@ -139,6 +140,7 @@ class Meow_MWL_Core {
 		$cache_buster, 
 		false 
 	);
+		wp_set_script_translations( 'mwl-build-js', 'meow-lightbox', MWL_PATH . '/languages' );
 
 		wp_localize_script( 'mwl-build-js', 'mwl_settings',
 			array(

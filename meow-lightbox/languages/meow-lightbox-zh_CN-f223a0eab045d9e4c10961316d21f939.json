@@ -1,0 +1,45 @@
+{
+  "translation-revision-date": "2026-06-07 15:00+0000",
+  "generator": "Meow Apps",
+  "source": "app/lightbox.js",
+  "domain": "messages",
+  "locale_data": {
+    "messages": {
+      "": {
+        "domain": "messages",
+        "lang": "zh_CN",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "Gallery": ["图库"],
+      "Dashboard": ["仪表盘"],
+      "Zoom image": ["缩放图片"],
+      "Previous": ["上一张"],
+      "Next": ["下一张"],
+      "Actions": ["操作"],
+      "Start Slideshow": ["开始幻灯片"],
+      "Stop Slideshow": ["停止幻灯片"],
+      "Show Info": ["显示信息"],
+      "Hide Info": ["隐藏信息"],
+      "Show Image": ["显示图片"],
+      "Show on Map": ["在地图上显示"],
+      "Show Metadata": ["显示元数据"],
+      "Hide Metadata": ["隐藏元数据"],
+      "Download": ["下载"],
+      "Close": ["关闭"],
+      "Image caption and metadata": ["图片标题和元数据"],
+      "Share": ["分享"],
+      "Fullscreen": ["全屏"],
+      "Exit Fullscreen": ["退出全屏"],
+      "Camera model": ["相机型号"],
+      "Lens": ["镜头"],
+      "Focal length": ["焦距"],
+      "Shutter speed": ["快门速度"],
+      "Aperture": ["光圈"],
+      "ISO": ["ISO"],
+      "Date taken": ["拍摄日期"],
+      "Keywords": ["关键词"],
+      "Copyright": ["版权"],
+      "Author": ["作者"]
+    }
+  }
+}

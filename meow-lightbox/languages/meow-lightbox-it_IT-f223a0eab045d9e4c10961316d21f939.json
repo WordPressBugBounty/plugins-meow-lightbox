@@ -1,0 +1,45 @@
+{
+  "translation-revision-date": "2026-06-07 15:00+0000",
+  "generator": "Meow Apps",
+  "source": "app/lightbox.js",
+  "domain": "messages",
+  "locale_data": {
+    "messages": {
+      "": {
+        "domain": "messages",
+        "lang": "it",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "Gallery": ["Galleria"],
+      "Dashboard": ["Bacheca"],
+      "Zoom image": ["Ingrandisci immagine"],
+      "Previous": ["Precedente"],
+      "Next": ["Successivo"],
+      "Actions": ["Azioni"],
+      "Start Slideshow": ["Avvia presentazione"],
+      "Stop Slideshow": ["Ferma presentazione"],
+      "Show Info": ["Mostra info"],
+      "Hide Info": ["Nascondi info"],
+      "Show Image": ["Mostra immagine"],
+      "Show on Map": ["Mostra sulla mappa"],
+      "Show Metadata": ["Mostra metadati"],
+      "Hide Metadata": ["Nascondi metadati"],
+      "Download": ["Scarica"],
+      "Close": ["Chiudi"],
+      "Image caption and metadata": ["Didascalia e metadati dell'immagine"],
+      "Share": ["Condividi"],
+      "Fullscreen": ["Schermo intero"],
+      "Exit Fullscreen": ["Esci da schermo intero"],
+      "Camera model": ["Modello fotocamera"],
+      "Lens": ["Obiettivo"],
+      "Focal length": ["Lunghezza focale"],
+      "Shutter speed": ["Tempo di esposizione"],
+      "Aperture": ["Apertura"],
+      "ISO": ["ISO"],
+      "Date taken": ["Data di scatto"],
+      "Keywords": ["Parole chiave"],
+      "Copyright": ["Copyright"],
+      "Author": ["Autore"]
+    }
+  }
+}

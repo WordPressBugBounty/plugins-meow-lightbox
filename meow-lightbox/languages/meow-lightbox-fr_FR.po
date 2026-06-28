@@ -1,0 +1,144 @@
+# French translation for Meow Lightbox
+# Copyright (C) 2026 Meow Apps
+# This file is distributed under the same license as the Meow Lightbox package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Meow Lightbox\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-07 06:01+0000\n"
+"PO-Revision-Date: 2026-06-07 15:00+0000\n"
+"Last-Translator: Meow Apps\n"
+"Language-Team: French\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: ../classes/admin.php:87
+msgid "Open on Google Maps"
+msgstr "Ouvrir dans Google Maps"
+
+#: ../classes/admin.php:92
+msgid "Reset GPS Data"
+msgstr "Réinitialiser les données GPS"
+
+#: app/admin/i18n.js
+msgid "Gallery"
+msgstr "Galerie"
+
+#: app/admin/i18n.js
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+#: app/admin/i18n.js
+msgid "Zoom image"
+msgstr "Zoomer l'image"
+
+#: app/admin/i18n.js
+msgid "Previous"
+msgstr "Précédent"
+
+#: app/admin/i18n.js
+msgid "Next"
+msgstr "Suivant"
+
+#: app/admin/i18n.js
+msgid "Actions"
+msgstr "Actions"
+
+#: app/admin/i18n.js
+msgid "Start Slideshow"
+msgstr "Démarrer le diaporama"
+
+#: app/admin/i18n.js
+msgid "Stop Slideshow"
+msgstr "Arrêter le diaporama"
+
+#: app/admin/i18n.js
+msgid "Show Info"
+msgstr "Afficher les infos"
+
+#: app/admin/i18n.js
+msgid "Hide Info"
+msgstr "Masquer les infos"
+
+#: app/admin/i18n.js
+msgid "Show Image"
+msgstr "Afficher l'image"
+
+#: app/admin/i18n.js
+msgid "Show on Map"
+msgstr "Voir sur la carte"
+
+#: app/admin/i18n.js
+msgid "Show Metadata"
+msgstr "Afficher les métadonnées"
+
+#: app/admin/i18n.js
+msgid "Hide Metadata"
+msgstr "Masquer les métadonnées"
+
+#: app/admin/i18n.js
+msgid "Download"
+msgstr "Télécharger"
+
+#: app/admin/i18n.js
+msgid "Close"
+msgstr "Fermer"
+
+#: app/admin/i18n.js
+msgid "Image caption and metadata"
+msgstr "Légende et métadonnées de l'image"
+
+#: app/admin/i18n.js
+msgid "Share"
+msgstr "Partager"
+
+#: app/admin/i18n.js
+msgid "Fullscreen"
+msgstr "Plein écran"
+
+#: app/admin/i18n.js
+msgid "Exit Fullscreen"
+msgstr "Quitter le plein écran"
+
+#: app/admin/i18n.js
+msgid "Camera model"
+msgstr "Modèle d'appareil"
+
+#: app/admin/i18n.js
+msgid "Lens"
+msgstr "Objectif"
+
+#: app/admin/i18n.js
+msgid "Focal length"
+msgstr "Distance focale"
+
+#: app/admin/i18n.js
+msgid "Shutter speed"
+msgstr "Vitesse d'obturation"
+
+#: app/admin/i18n.js
+msgid "Aperture"
+msgstr "Ouverture"
+
+#: app/admin/i18n.js
+msgid "ISO"
+msgstr "ISO"
+
+#: app/admin/i18n.js
+msgid "Date taken"
+msgstr "Date de prise de vue"
+
+#: app/admin/i18n.js
+msgid "Keywords"
+msgstr "Mots-clés"
+
+#: app/admin/i18n.js
+msgid "Copyright"
+msgstr "Droits d'auteur"
+
+#: app/admin/i18n.js
+msgid "Author"
+msgstr "Auteur"

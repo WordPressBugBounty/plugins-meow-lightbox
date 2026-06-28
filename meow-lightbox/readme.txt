@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, photoswipe, photography
 Donate link: https://www.patreon.com/meowapps
 Requires at least: 6.0
 Tested up to: 7.0
-Stable tag: 5.5.7
+Stable tag: 5.5.8
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -152,6 +152,14 @@ Yes! Use arrow keys to navigate, ESC to close, and keyboard shortcuts for all co
 Meow Lightbox works great with translation plugins and multilingual setups.
 
 == Changelog ==
+
+= 5.5.8 (2026/06/28) =
+* Fix: Resolved an issue where gallery infinite scroll could get stuck in a load more loop.
+* Update: Removed placeholder image handling in the lightbox.
+* Add: Translations support for the lightbox interface with additional language coverage.
+* 🎵 Discuss with others about Meow Lightbox on [the Discord](https://discord.gg/bHDGh38).
+* 🌴 Keep us motivated with [a little review here](https://wordpress.org/support/plugin/meow-lightbox/reviews/). Thank you!
+* 🥰 If you want to help us, check our [Patreon](https://www.patreon.com/meowapps). Thank you!
 
 = 5.5.7 (2026/05/30) =
 * Update: Fullscreen is now a toolbar action, with "Start Fullscreen" available as a secondary option for mobile and desktop.

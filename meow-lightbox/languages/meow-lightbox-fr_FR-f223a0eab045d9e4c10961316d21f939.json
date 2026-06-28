@@ -1,0 +1,45 @@
+{
+  "translation-revision-date": "2026-06-07 15:00+0000",
+  "generator": "Meow Apps",
+  "source": "app/lightbox.js",
+  "domain": "messages",
+  "locale_data": {
+    "messages": {
+      "": {
+        "domain": "messages",
+        "lang": "fr",
+        "plural-forms": "nplurals=2; plural=(n > 1);"
+      },
+      "Gallery": ["Galerie"],
+      "Dashboard": ["Tableau de bord"],
+      "Zoom image": ["Zoomer l'image"],
+      "Previous": ["Précédent"],
+      "Next": ["Suivant"],
+      "Actions": ["Actions"],
+      "Start Slideshow": ["Démarrer le diaporama"],
+      "Stop Slideshow": ["Arrêter le diaporama"],
+      "Show Info": ["Afficher les infos"],
+      "Hide Info": ["Masquer les infos"],
+      "Show Image": ["Afficher l'image"],
+      "Show on Map": ["Voir sur la carte"],
+      "Show Metadata": ["Afficher les métadonnées"],
+      "Hide Metadata": ["Masquer les métadonnées"],
+      "Download": ["Télécharger"],
+      "Close": ["Fermer"],
+      "Image caption and metadata": ["Légende et métadonnées de l'image"],
+      "Share": ["Partager"],
+      "Fullscreen": ["Plein écran"],
+      "Exit Fullscreen": ["Quitter le plein écran"],
+      "Camera model": ["Modèle d'appareil"],
+      "Lens": ["Objectif"],
+      "Focal length": ["Distance focale"],
+      "Shutter speed": ["Vitesse d'obturation"],
+      "Aperture": ["Ouverture"],
+      "ISO": ["ISO"],
+      "Date taken": ["Date de prise de vue"],
+      "Keywords": ["Mots-clés"],
+      "Copyright": ["Droits d'auteur"],
+      "Author": ["Auteur"]
+    }
+  }
+}

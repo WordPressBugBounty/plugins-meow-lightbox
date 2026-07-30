@@ -248,10 +248,10 @@ class Meow_MWL_Core {
 	}
 
 	function edit_attachment( $post_id ) {
-		delete_transient( 'mwl_exif_' . $post_id . '_XX' );
-		delete_transient( 'mwl_exif_' . $post_id . '_OO' );
-		delete_transient( 'mwl_exif_' . $post_id . '_XO' );
-		delete_transient( 'mwl_exif_' . $post_id . '_OX' );
+		delete_transient( 'mwl_exif_v2_' . $post_id . '_XX' );
+		delete_transient( 'mwl_exif_v2_' . $post_id . '_OO' );
+		delete_transient( 'mwl_exif_v2_' . $post_id . '_XO' );
+		delete_transient( 'mwl_exif_v2_' . $post_id . '_OX' );
 		// Clear REST response cache for this attachment
 		$this->clear_rest_cache_for_attachment( $post_id );
 	}
@@ -273,7 +273,7 @@ class Meow_MWL_Core {
 			$page_url = $parsed['path'] ?? '';
 		}
 		// Use MD5 hash to avoid exceeding WordPress transient name limit
-		return 'mwl_page_dynamic_' . md5( $page_url );
+		return 'mwl_page_dynamic_v2_' . md5( $page_url );
 	}
 
 	private function delete_page_dynamic_cache( $page_url = null ) {
@@ -281,7 +281,7 @@ class Meow_MWL_Core {
 		delete_transient( $cache_key );
 	}
 
-	public function get_page_dynamic_cache( $page_url = null ) {
+	public function get_page_dynamic_cache( $page_url = null, $apply_filters = true ) {
 		if( empty( $page_url ) ) {
 			$page_url = $_SERVER['REQUEST_URI'] ?? '';
 		}
@@ -293,6 +293,12 @@ class Meow_MWL_Core {
 		$cached = get_transient( $cache_key );
 		if ( $cached !== false ) {
 			$this->log( '📥 Served cached page dynamic data for: ' . $page_url );
+			// The cache stores RAW data, so run the display filters on each entry.
+			if ( $apply_filters && is_array( $cached ) ) {
+				foreach ( $cached as $cached_id => $cached_info ) {
+					$cached[$cached_id] = $this->apply_exif_filters( $cached_info, $cached_id );
+				}
+			}
 		}
 		return $cached;
 	}
@@ -318,7 +324,7 @@ class Meow_MWL_Core {
 		return get_post_type( $id ) === 'attachment';
 	}
 
-	function get_exif_info( $id ) {
+	function get_exif_info( $id, $apply_filters = true ) {
 		// Validate attachment ID first
 		if ( !$this->is_valid_attachment_id( $id ) ) {
 			return array(
@@ -330,11 +336,11 @@ class Meow_MWL_Core {
 		// The transient should only match a certain media entry with three given options, as only those three options
 		// has an influence on the process that follows
 		if ( !$this->disableCache ) {
-			$transient_name = 'mwl_exif_' . $id . '_' . ( $this->get_option( 'map', false ) ? 'O' : 'X' ) .
+			$transient_name = 'mwl_exif_v2_' . $id . '_' . ( $this->get_option( 'map', false ) ? 'O' : 'X' ) .
 				( $this->get_option( 'exif_lens', false ) ? 'O' : 'X' ) . ( $this->imageSize === 'srcset' ? '' : ( '_' . $this->imageSize ) );
 			$info = get_transient( $transient_name );
 
-			if ( is_array( $info ) && $info['data']['gps'] != 'N/A' && $this->get_option( 'map', false ) ) {
+			if ( is_array( $info ) && !empty( $info['data']['gps'] ) && $info['data']['gps'] !== 'N/A' && $this->get_option( 'map', false ) ) {
 				if ($this->map !== null) {
 						$this->map->lightbox_added();
 					} else {
@@ -343,7 +349,8 @@ class Meow_MWL_Core {
 			}
 
 			if ( $info ) {
-				return $info;
+				// The cache stores RAW data, so run the display filters on it (unless raw was requested).
+				return $apply_filters ? $this->apply_exif_filters( $info, $id ) : $info;
 			}
 		}
 		
@@ -455,6 +462,8 @@ class Meow_MWL_Core {
 			$dl = $arr[0];
 		}
 
+		if( empty( $dl ) ) $dl = $file;
+
 		// Initialize metadata with an empty string if it does not exist.
 		$image_meta_keys = [
 			'geo_coordinates',
@@ -553,29 +562,68 @@ class Meow_MWL_Core {
 				'width' => isset($meta['width']) ? $meta['width'] : null, 
 				'height' => isset($meta['height']) ? $meta['height'] : null 
 			),
-			'download_link' => apply_filters( 'mwl_download_link', $dl, $id, $meta ),
+			'download_link' => $dl,
 			'data' => array(
 				'id' => (int)$id,
-				'title' => apply_filters( 'mwl_img_title', $title, $id, $meta ),
-				'caption' => apply_filters( 'mwl_img_caption', $caption, $id, $meta ),
-				'description' => apply_filters( 'mwl_img_description', $description, $id, $meta ),
-				'alt_text' => apply_filters( 'mwl_img_alt_text', $alt, $id, $meta ),
-				'gps' => apply_filters( 'mwl_img_gps', $meta['image_meta']['geo_coordinates'],	$id, $meta ),
-				'copyright' => apply_filters( 'mwl_img_copyright', $copyright, $id, $meta ),
-				'author' => apply_filters( 'mwl_img_author', $author, $id, $meta ),
-				'camera' => apply_filters( 'mwl_img_camera',  $camera, $id, $meta ),
-				'date' => apply_filters( 'mwl_img_date', $date, $id, $meta ),
-				'lens' => apply_filters( 'mwl_img_lens', $lense, $id, $meta ),
-				'aperture' => apply_filters( 'mwl_img_aperture', $meta['image_meta']['aperture'], $id, $meta ),
-				'focal_length' => apply_filters( 'mwl_img_focal_length', $meta['image_meta']['focal_length'], $id, $meta ),
-				'iso' => apply_filters( 'mwl_img_iso', $meta['image_meta']['iso'], $id, $meta ),
-				'shutter_speed' => apply_filters( 'mwl_img_shutter_speed', $meta['image_meta']['shutter_speed'], $id, $meta ),
-				'keywords' => apply_filters( 'mwl_img_keywords', $keywords, $id, $meta ),
+				'title' => $title,
+				'caption' => $caption,
+				'description' => $description,
+				'alt_text' => $alt,
+				'gps' => $meta['image_meta']['geo_coordinates'],
+				'copyright' => $copyright,
+				'author' => $author,
+				'camera' => $camera,
+				'date' => $date,
+				'lens' => $lense,
+				'aperture' => $meta['image_meta']['aperture'],
+				'focal_length' => $meta['image_meta']['focal_length'],
+				'iso' => $meta['image_meta']['iso'],
+				'shutter_speed' => $meta['image_meta']['shutter_speed'],
+				'keywords' => $keywords,
 			)
 		);
+
+		// Cache the RAW (unfiltered) info so the display filters always run on every request.
 		if ( !$this->disableCache ) {
 			set_transient( $transient_name, $info, 3 * MONTH_IN_SECONDS );
 		}
+
+		return $apply_filters ? $this->apply_exif_filters( $info, $id, $meta ) : $info;
+	}
+
+	function apply_exif_filters( $info, $id, $meta = null ) {
+		if ( !is_array( $info ) || empty( $info['success'] ) || !isset( $info['data'] ) ) {
+			return $info;
+		}
+
+		// Make sure the default filters are registered.
+		if ( !has_filter( 'mwl_img_focal_length' ) ) {
+			new Meow_MWL_Filters();
+		}
+
+		if ( $meta === null ) {
+			$meta = wp_get_attachment_metadata( $id );
+		}
+
+		$info['download_link'] = apply_filters( 'mwl_download_link', $info['download_link'], $id, $meta );
+
+		$data = $info['data'];
+		$data['title'] = apply_filters( 'mwl_img_title', $data['title'], $id, $meta );
+		$data['caption'] = apply_filters( 'mwl_img_caption', $data['caption'], $id, $meta );
+		$data['description'] = apply_filters( 'mwl_img_description', $data['description'], $id, $meta );
+		$data['alt_text'] = apply_filters( 'mwl_img_alt_text', $data['alt_text'], $id, $meta );
+		$data['gps'] = apply_filters( 'mwl_img_gps', $data['gps'], $id, $meta );
+		$data['copyright'] = apply_filters( 'mwl_img_copyright', $data['copyright'], $id, $meta );
+		$data['author'] = apply_filters( 'mwl_img_author', $data['author'], $id, $meta );
+		$data['camera'] = apply_filters( 'mwl_img_camera', $data['camera'], $id, $meta );
+		$data['date'] = apply_filters( 'mwl_img_date', $data['date'], $id, $meta );
+		$data['lens'] = apply_filters( 'mwl_img_lens', $data['lens'], $id, $meta );
+		$data['aperture'] = apply_filters( 'mwl_img_aperture', $data['aperture'], $id, $meta );
+		$data['focal_length'] = apply_filters( 'mwl_img_focal_length', $data['focal_length'], $id, $meta );
+		$data['iso'] = apply_filters( 'mwl_img_iso', $data['iso'], $id, $meta );
+		$data['shutter_speed'] = apply_filters( 'mwl_img_shutter_speed', $data['shutter_speed'], $id, $meta );
+		$data['keywords'] = apply_filters( 'mwl_img_keywords', $data['keywords'], $id, $meta );
+		$info['data'] = $data;
 
 		return $info;
 	}
@@ -1165,6 +1213,15 @@ class Meow_MWL_Core {
 			foreach ( $images_info as $id => $info ) {
 				if ( isset( $info['file'] ) && !empty( $info['file'] ) ) {
 					$url_index[$info['file']] = $id;
+				}
+				// Include the rendered URLs recorded from previous dynamic fetches, so the
+				// frontend can resolve these images locally without triggering a REST call.
+				if ( isset( $info['requested_urls'] ) && is_array( $info['requested_urls'] ) ) {
+					foreach ( $info['requested_urls'] as $requested_url ) {
+						if ( !empty( $requested_url ) ) {
+							$url_index[$requested_url] = $id;
+						}
+					}
 				}
 			}
 

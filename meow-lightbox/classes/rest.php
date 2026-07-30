@@ -69,65 +69,64 @@ class Meow_MWL_Rest
 
 		$data = [];
 
-		// Check page cache first if enabled
+		// Check page cache first if enabled (raw data; filters are applied per-entry below)
 		$page_cache = null;
 		if ( $cache_enabled && $page_url ) {
-			$page_cache = $this->core->get_page_dynamic_cache( $page_url );
+			$page_cache = $this->core->get_page_dynamic_cache( $page_url, false );
 		}
+
+		// Raw (unfiltered) entries to add to the page cache.
+		$new_cache_entries = [];
 
 		if( !empty( $images ) ) 
 		{
 			foreach( $images as $image ) {
-				// Quick check: if image has an ID and it's in cache, use it directly
+				$req_url = $image['url'] ?? null;
+
+				// Resolve the raw EXIF info for this image (from cache if possible).
 				$id = isset( $image['id'] ) ? intval( $image['id'] ) : 0;
+				$raw = null;
+
 				if ( $id && $page_cache && isset( $page_cache[$id] ) ) {
-					$data[] = [
-						'url' => $image['url'] ?? null,
-						'id' => $id,
-						'data' => $page_cache[$id]
-					];
-					continue;
+					$raw = $page_cache[$id];
+				} else {
+					// Need to resolve the ID (handles cases where ID is missing or invalid)
+					$id = $this->core->resolve_image_id_from_data( $image );
+
+					if ( $id && $page_cache && isset( $page_cache[$id] ) ) {
+						$raw = $page_cache[$id];
+					} else {
+						// Not in cache, fetch RAW EXIF info (raw is cached, filters run for the response)
+						$raw = $this->core->get_exif_info( $id, false );
+					}
 				}
 
-				// Need to resolve the ID (handles cases where ID is missing or invalid)
-				$id = $this->core->resolve_image_id_from_data( $image );
-				
-				// Check cache again with resolved ID
-				if ( $page_cache && isset( $page_cache[$id] ) ) {
-					$data[] = [
-						'url' => $image['url'] ?? null,
-						'id' => $id,
-						'data' => $page_cache[$id]
-					];
-					continue;
+				// If the data is valid, record the rendered URL so future page loads can
+				// resolve this image locally (via mwl_url_index) without any REST call.
+				if ( is_array( $raw ) && isset( $raw['success'] ) && $raw['success'] !== false ) {
+					if ( !empty( $req_url ) ) {
+						if ( !isset( $raw['requested_urls'] ) || !is_array( $raw['requested_urls'] ) ) {
+							$raw['requested_urls'] = [];
+						}
+						if ( !in_array( $req_url, $raw['requested_urls'], true ) ) {
+							$raw['requested_urls'][] = $req_url;
+						}
+					}
+					$new_cache_entries[$id] = $raw;
 				}
 
-				// Not in cache, fetch EXIF info
-				$res = $this->core->get_exif_info( $id );
 				$data[] = [
-					'url' => $image['url'] ?? null,
+					'url' => $req_url,
 					'id' => $id,
-					'data' => $res
+					'data' => $this->core->apply_exif_filters( $raw, $id )
 				];
 			}
 		}
 
-		// Update the page-level dynamic cache with any new data
-		if ( $cache_enabled && $page_url ) {
-			$new_cache_entries = [];
-			foreach ( $data as $item ) {
-				if ( isset( $item['id'] ) && isset( $item['data'] ) && $item['data']['success'] !== false ) {
-					// Only add if not already in cache
-					if ( !$page_cache || !isset( $page_cache[$item['id']] ) ) {
-						$new_cache_entries[$item['id']] = $item['data'];
-					}
-				}
-			}
-			
-			if ( !empty( $new_cache_entries ) ) {
-				$updated_cache = $page_cache ? array_replace( $page_cache, $new_cache_entries ) : $new_cache_entries;
-				$this->core->set_page_dynamic_cache( $updated_cache, $page_url );
-			}
+		// Update the page-level dynamic cache with the new RAW entries
+		if ( $cache_enabled && $page_url && !empty( $new_cache_entries ) ) {
+			$updated_cache = $page_cache ? array_replace( $page_cache, $new_cache_entries ) : $new_cache_entries;
+			$this->core->set_page_dynamic_cache( $updated_cache, $page_url );
 		}
 
 		$response = [ 'success' => true, 'data' => $data ];

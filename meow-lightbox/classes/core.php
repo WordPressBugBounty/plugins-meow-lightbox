@@ -148,6 +148,10 @@ class Meow_MWL_Core {
 				'rest_nonce' => wp_create_nonce( 'wp_rest' ),
 				'plugin_url' => MWL_URL . 'app/',
 				'version' => $cache_buster,
+				// Only administrators get a visible message when the EXIF cannot be fetched,
+				// along with a direct link to the Diagnostics tab.
+				'is_admin' => current_user_can( 'manage_options' ),
+				'diagnostics_url' => admin_url( 'admin.php?page=mwl_settings&nekoTab=diagnostics' ),
 				'settings' => array(
 					'rtf_slider_fix' => $this->get_option( 'rtf_slider_fix', false ),
 					'engine' => $this->get_option( 'engine', 'photoswipe' ),
@@ -418,15 +422,24 @@ class Meow_MWL_Core {
 
 		$displayLens = $this->get_option( 'exif_lens', false );
 		if ( $displayLens && !isset( $meta['image_meta']['lens'] ) ) {
-			$file = get_attached_file( $id );
-			$pp = pathinfo( $file );
-			$meta['image_meta']['lens'] = "";
-			if ( in_array( strtolower( $pp['extension'] ), array( 'jpg', 'jpeg', 'tiff' ) ) ) {
-				$exif = @exif_read_data( $file );
-				if ( $exif && isset( $exif['UndefinedTag:0xA434'] ) )
-					$meta['image_meta']['lens'] = empty( $exif['UndefinedTag:0xA434'] ) ? "" : $exif['UndefinedTag:0xA434'];
+			// The lens is cached in our own post meta (never in the attachment metadata), otherwise
+			// the wp_update_attachment_metadata() call would let other plugins rewrite the caption
+			// and the description of the media. An empty value means "read, but nothing found".
+			if ( metadata_exists( 'post', $id, Meow_MWL_Exif::LENS_META_KEY ) ) {
+				$meta['image_meta']['lens'] = (string) get_post_meta( $id, Meow_MWL_Exif::LENS_META_KEY, true );
 			}
-			wp_update_attachment_metadata( $id, $meta );
+			else {
+				$file = get_attached_file( $id );
+				$pp = $file ? pathinfo( $file ) : array();
+				$extension = isset( $pp['extension'] ) ? strtolower( $pp['extension'] ) : '';
+				$meta['image_meta']['lens'] = "";
+				if ( in_array( $extension, array( 'jpg', 'jpeg', 'tiff' ) ) ) {
+					$exif = @exif_read_data( $file );
+					if ( $exif && isset( $exif['UndefinedTag:0xA434'] ) )
+						$meta['image_meta']['lens'] = empty( $exif['UndefinedTag:0xA434'] ) ? "" : $exif['UndefinedTag:0xA434'];
+					update_post_meta( $id, Meow_MWL_Exif::LENS_META_KEY, $meta['image_meta']['lens'] );
+				}
+			}
 		}
 
 		// Prepare the final info variable containing the metadata

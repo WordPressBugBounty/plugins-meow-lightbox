@@ -58,7 +58,39 @@ class Meow_MWL_Rest
 			'permission_callback' => "__return_true",
 			'callback' => array( $this, 'rest_regenerate_mwl_data' )
 		) );
+
+		// Cheapest possible public endpoint, used by the Diagnostics tab to check that
+		// visitors who are not logged in can actually reach our namespace.
+		register_rest_route( $this->namespace, '/ping', array(
+			'methods' => 'GET',
+			'permission_callback' => "__return_true",
+			'callback' => array( $this, 'rest_ping' )
+		) );
+
+		register_rest_route( $this->namespace, '/diagnostics', array(
+			'methods' => 'GET',
+			'permission_callback' => array( $this->core, 'can_access_settings' ),
+			'callback' => array( $this, 'rest_diagnostics' )
+		) );
   }
+
+	function rest_ping() {
+		return new WP_REST_Response( [
+			'success' => true,
+			'logged_in' => is_user_logged_in(),
+			'version' => MWL_VERSION
+		], 200 );
+	}
+
+	function rest_diagnostics() {
+		try {
+			$diagnostics = new Meow_MWL_Diagnostics( $this->core );
+			return new WP_REST_Response( [ 'success' => true, 'data' => $diagnostics->run() ], 200 );
+		}
+		catch ( Exception $e ) {
+			return new WP_REST_Response( [ 'success' => false, 'message' => $e->getMessage() ], 500 );
+		}
+	}
 
 
   	function rest_regenerate_mwl_data( $request ) {

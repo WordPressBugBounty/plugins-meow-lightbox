@@ -58,8 +58,14 @@ class Meow_MWL_Admin extends MeowKit_MWL_Admin {
 		if ( isset( $_GET['mwl_reset_gps'] ) && current_user_can( 'manage_options' ) ) {
 			$id = intval( $_GET['mwl_reset_gps'] );
 			if ( $id ) {
+				delete_post_meta( $id, Meow_MWL_Exif::GEO_META_KEY );
+
+				// Legacy: the coordinates were stored in the attachment metadata by the previous
+				// versions, so they are only rewritten when they are actually there.
 				$meta = wp_get_attachment_metadata( $id );
-				if ( $meta && isset( $meta['image_meta'] ) ) {
+				$has_legacy_gps = $meta && isset( $meta['image_meta'] ) && ( isset( $meta['image_meta']['geo_coordinates'] )
+					|| isset( $meta['image_meta']['geo_latitude'] ) || isset( $meta['image_meta']['geo_longitude'] ) );
+				if ( $has_legacy_gps ) {
 					unset( $meta['image_meta']['geo_coordinates'] );
 					unset( $meta['image_meta']['geo_latitude'] );
 					unset( $meta['image_meta']['geo_longitude'] );

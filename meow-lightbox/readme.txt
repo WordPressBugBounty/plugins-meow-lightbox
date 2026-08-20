@@ -3,9 +3,9 @@ Contributors: TigrouMeow
 Tags: lightbox, responsive, exif, photoswipe, photography
 Donate link: https://www.patreon.com/meowapps
 Requires at least: 6.0
-Tested up to: 7.0
-Stable tag: 5.5.9
-Requires PHP: 7.4
+Tested up to: 7.1
+Stable tag: 5.6.0
+Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -152,6 +152,15 @@ Yes! Use arrow keys to navigate, ESC to close, and keyboard shortcuts for all co
 Meow Lightbox works great with translation plugins and multilingual setups.
 
 == Changelog ==
+
+= 5.6.0 (2026/08/20) =
+* Add: Diagnostics tab that automatically detects REST API issues.
+* Update: Reworked the Meow Apps dashboard with a plugin board, AI site analysis and a bounded speed test.
+* Update: Minimum PHP requirement is now 8.1.
+* Update: Images added after page load are now detected with a mutation observer instead of timed re-rendering.
+* Fix: GPS coordinates and lens data are cached in post meta so third-party plugins no longer overwrite captions and descriptions.
+* Fix: 1px line appearing under the image in the lightbox.
+* Update: PhotoSwipe is now vendored in the plugin instead of pulled from npm, making it easier to debug and patch.
 
 = 5.5.9 (2026/07/30) =
 * Fix: EXIF filters now run on cached page data.

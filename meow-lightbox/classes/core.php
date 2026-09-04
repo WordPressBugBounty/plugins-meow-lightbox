@@ -25,6 +25,8 @@ class Meow_MWL_Core {
 		add_action( 'save_post', array( $this, 'on_save_post' ), 10, 3 );
 		//add_filter( 'mgl_force_rewrite_mwl_data', array( $this, 'mgl_force_rewrite_mwl_data' ), 10, 1 );
 		add_action( 'edit_attachment', array( $this, 'edit_attachment' ), 10, 1 );
+		// Perfect Images fires this when its CDN settings change; the cached URLs point to the old host.
+		add_action( 'wr2x_cdn_settings_changed', array( $this, 'reset_cache' ) );
 
 		if ( class_exists( 'MeowPro_MWL_Core' ) ) {
 			$this->map = new MeowPro_MWL_Core( $this );
@@ -35,14 +37,16 @@ class Meow_MWL_Core {
 
 			// The Lightbox should be completely off if the request is asynchronous
 			MeowKit_MWL_Helpers::is_rest() && new Meow_MWL_Rest( $this );
+
+			$this->imageSize = $this->get_option( 'image_size', 'srcset' );
+			$this->disableCache = $this->get_option( 'disable_cache' );
+
 			$recent_common = method_exists( 'MeowKit_MWL_Helpers', 'is_pagebuilder_request' );
 			if ( MeowKit_MWL_Helpers::is_asynchronous_request() || ( $recent_common && MeowKit_MWL_Helpers::is_pagebuilder_request() ) ) {
 				return;
 			}
 
 			$this->isObMode = $this->get_option( 'use_output_buffering', $this->isObMode );
-			$this->imageSize = $this->get_option( 'image_size', 'srcset' );
-			$this->disableCache = $this->get_option( 'disable_cache' );
 			$this->isInfinite = $this->get_option( 'infinite', false );
 			$this->parsingEngine = $this->get_option( 'parsing_engine', $this->parsingEngine );
 			$this->renderingMode = $this->isObMode ? 'rewrite' : 'replace';
@@ -258,6 +262,13 @@ class Meow_MWL_Core {
 		delete_transient( 'mwl_exif_v2_' . $post_id . '_OX' );
 		// Clear REST response cache for this attachment
 		$this->clear_rest_cache_for_attachment( $post_id );
+	}
+
+	function reset_cache() {
+		global $wpdb;
+		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%_mwl_exif_%'" );
+		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_mwl_page_dynamic_%'" );
+		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_mwl_page_dynamic_%'" );
 	}
 
 	private function clear_rest_cache_for_attachment( $attachment_id ) {

@@ -186,12 +186,7 @@ class Meow_MWL_Rest
 	}
 
 	function rest_reset_cache() {
-		global $wpdb;
-		// Clear EXIF caches
-		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%_mwl_exif_%'" );
-		// Clear page-level dynamic content caches
-		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_mwl_page_dynamic_%'" );
-		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_mwl_page_dynamic_%'" );
+		$this->core->reset_cache();
 		return new WP_REST_Response( [ 'success' => true ], 200 );
 	}
 

@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, photoswipe, photography
 Donate link: https://www.patreon.com/meowapps
 Requires at least: 6.0
 Tested up to: 7.1
-Stable tag: 5.6.1
+Stable tag: 5.6.2
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -152,6 +152,9 @@ Yes! Use arrow keys to navigate, ESC to close, and keyboard shortcuts for all co
 Meow Lightbox works great with translation plugins and multilingual setups.
 
 == Changelog ==
+
+= 5.6.2 (2026/10/03) =
+* Update: The PhotoSwipe buttons, the sharing close button and the image error message can now be translated.
 
 = 5.6.1 (2026/09/04) =
 * Fix: Resolved a conflict with other plugins setting window.pswp that broke lightbox clicks.

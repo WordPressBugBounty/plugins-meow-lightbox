@@ -1403,6 +1403,12 @@ class simple_html_dom
 	protected $cursor;
 	protected $parent;
 	protected $noise = array();
+	// Meow Apps security patch (2026-10, Wordfence report on Meow Lightbox <= 5.6.2): placeholders
+	// used to be the predictable "___noise___ 1000", so page text such as a comment body or a
+	// display name could contain one and get another block's raw content (script, style, code)
+	// pasted in its place, including inside attributes. Each parse now uses a random token, and
+	// only the exact placeholders this parser created are restored. Keep this if vendor/ is updated.
+	protected $noise_token = '';
 	protected $token_blank = " \t\r\n";
 	protected $token_equal = ' =/>';
 	protected $token_slash = " />\r\n\t";
@@ -1635,6 +1641,7 @@ class simple_html_dom
 		$this->pos = 0;
 		$this->cursor = 1;
 		$this->noise = array();
+		$this->noise_token = '___mwnoise_' . bin2hex(random_bytes(12)) . '_';
 		$this->nodes = array();
 		$this->lowercase = $lowercase;
 		$this->default_br_text = $defaultBRText;
@@ -2204,7 +2211,7 @@ class simple_html_dom
 		);
 
 		for ($i = $count - 1; $i > -1; --$i) {
-			$key = '___noise___' . sprintf('% 5d', count($this->noise) + 1000);
+			$key = $this->noise_token . sprintf('%06d', count($this->noise)) . '___';
 
 			if (is_object($debug_object)) {
 				$debug_object->debug_log(2, 'key is: ' . $key);
@@ -2228,43 +2235,13 @@ class simple_html_dom
 		global $debug_object;
 		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
 
-		while (($pos = strpos($text, '___noise___')) !== false) {
-			// Sometimes there is a broken piece of markup, and we don't GET the
-			// pos+11 etc... token which indicates a problem outside of us...
-
-			// todo: "___noise___1000" (or any number with four or more digits)
-			// in the DOM causes an infinite loop which could be utilized by
-			// malicious software
-			if (strlen($text) > $pos + 15) {
-				$key = '___noise___'
-				. $text[$pos + 11]
-				. $text[$pos + 12]
-				. $text[$pos + 13]
-				. $text[$pos + 14]
-				. $text[$pos + 15];
-
-				if (is_object($debug_object)) {
-					$debug_object->debug_log(2, 'located key of: ' . $key);
-				}
-
-				if (isset($this->noise[$key])) {
-					$text = substr($text, 0, $pos)
-					. $this->noise[$key]
-					. substr($text, $pos + 16);
-				} else {
-					// do this to prevent an infinite loop.
-					$text = substr($text, 0, $pos)
-					. 'UNDEFINED NOISE FOR KEY: '
-					. $key
-					. substr($text, $pos + 16);
-				}
-			} else {
-				// There is no valid key being given back to us... We must get
-				// rid of the ___noise___ or we will have a problem.
-				$text = substr($text, 0, $pos)
-				. 'NO NUMERIC NOISE KEY'
-				. substr($text, $pos + 11);
-			}
+		// Exact keys only: text that merely looks like a placeholder stays as it is. A few passes,
+		// because a removed block can hold another one (a script inside an HTML comment).
+		if (empty($this->noise) || $this->noise_token === '') {
+			return $text;
+		}
+		for ($i = 0; $i < 10 && strpos($text, $this->noise_token) !== false; $i++) {
+			$text = strtr($text, $this->noise);
 		}
 		return $text;
 	}

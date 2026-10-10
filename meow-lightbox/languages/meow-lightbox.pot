@@ -6,7 +6,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-03 08:54+0000\n"
+"POT-Creation-Date: 2026-10-10 01:02+0000\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -30,132 +30,122 @@ msgstr ""
 msgid "The function <i>exif_read_data</i> is not available on your server, but it is required by the Meow Lightbox. Please ask your hosting service to enable the <i>php_exif</i> module."
 msgstr ""
 
-#. JavaScript strings from app/admin/i18n.js
-
-#: app/admin/i18n.js
-msgid "Gallery"
-msgstr ""
-
-#: app/admin/i18n.js
-msgid "Dashboard"
-msgstr ""
-
-#: app/admin/i18n.js
+#: ../classes/core.php:244
 msgid "Zoom image"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:247
 msgid "Previous"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:248
 msgid "Next"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:249
 msgid "Actions"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:250
 msgid "Start Slideshow"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:251
 msgid "Stop Slideshow"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:252
 msgid "Show Info"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:253
 msgid "Hide Info"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:254
 msgid "Show Image"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:255
 msgid "Show on Map"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:256
 msgid "Show Metadata"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:257
 msgid "Hide Metadata"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:258
 msgid "Download"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:259
 msgid "Close"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:260
 msgid "Close sharing options"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:261
 msgid "The image cannot be loaded"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:262
 msgid "Image caption and metadata"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:263
 msgid "Share"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:264
 msgid "Fullscreen"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:265
 msgid "Exit Fullscreen"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:268
 msgid "Camera model"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:269
 msgid "Lens"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:270
 msgid "Focal length"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:271
 msgid "Shutter speed"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:272
 msgid "Aperture"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:273
 msgid "ISO"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:274
 msgid "Date taken"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:275
 msgid "Keywords"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:276
 msgid "Copyright"
 msgstr ""
 
-#: app/admin/i18n.js
+#: ../classes/core.php:277
 msgid "Author"
 msgstr ""

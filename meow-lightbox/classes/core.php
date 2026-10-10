@@ -140,11 +140,14 @@ class Meow_MWL_Core {
     wp_enqueue_script( 
 		'mwl-build-js', 
 		plugins_url( '/app/lightbox.js', __DIR__ ), 
-		array( 'wp-i18n' ),
+		array(),
 		$cache_buster, 
 		false 
 	);
-		wp_set_script_translations( 'mwl-build-js', 'meow-lightbox', MWL_PATH . '/languages' );
+
+		// Labels are translated here rather than with wp.i18n in JS: the minified bundle hides its
+		// __() calls from translate.wordpress.org and Loco, so JS strings were never translatable.
+		wp_localize_script( 'mwl-build-js', 'mwl_i18n', $this->get_lightbox_i18n() );
 
 		wp_localize_script( 'mwl-build-js', 'mwl_settings',
 			array(
@@ -232,6 +235,48 @@ class Meow_MWL_Core {
 		// Remove PrettyPhoto (Visual Composer's Lightbox)
 		wp_enqueue_script( 'prettyphoto' );
 		wp_deregister_script( 'prettyphoto' );
+	}
+
+	// Keys must match app/i18n/index.js, which holds the English fallbacks.
+	function get_lightbox_i18n() {
+		return array(
+			'ARIA' => array(
+				'ZOOM_IMAGE' => __( 'Zoom image', 'meow-lightbox' ),
+			),
+			'TOOLBAR' => array(
+				'PREVIOUS' => __( 'Previous', 'meow-lightbox' ),
+				'NEXT' => __( 'Next', 'meow-lightbox' ),
+				'ACTIONS' => __( 'Actions', 'meow-lightbox' ),
+				'PLAY' => __( 'Start Slideshow', 'meow-lightbox' ),
+				'PAUSE' => __( 'Stop Slideshow', 'meow-lightbox' ),
+				'SHOW_INFO' => __( 'Show Info', 'meow-lightbox' ),
+				'HIDE_INFO' => __( 'Hide Info', 'meow-lightbox' ),
+				'SHOW_IMAGE' => __( 'Show Image', 'meow-lightbox' ),
+				'SHOW_ON_MAP' => __( 'Show on Map', 'meow-lightbox' ),
+				'SHOW_METADATA' => __( 'Show Metadata', 'meow-lightbox' ),
+				'HIDE_METADATA' => __( 'Hide Metadata', 'meow-lightbox' ),
+				'DOWNLOAD' => __( 'Download', 'meow-lightbox' ),
+				'CLOSE' => __( 'Close', 'meow-lightbox' ),
+				'CLOSE_SHARING' => __( 'Close sharing options', 'meow-lightbox' ),
+				'IMAGE_ERROR' => __( 'The image cannot be loaded', 'meow-lightbox' ),
+				'IMAGE_CAPTION_AND_METADATA' => __( 'Image caption and metadata', 'meow-lightbox' ),
+				'SHARE' => __( 'Share', 'meow-lightbox' ),
+				'FULLSCREEN' => __( 'Fullscreen', 'meow-lightbox' ),
+				'EXIT_FULLSCREEN' => __( 'Exit Fullscreen', 'meow-lightbox' ),
+			),
+			'EXIF' => array(
+				'CAMERA_MODEL' => __( 'Camera model', 'meow-lightbox' ),
+				'LENS' => __( 'Lens', 'meow-lightbox' ),
+				'FOCAL_LENGTH' => __( 'Focal length', 'meow-lightbox' ),
+				'SHUTTER_SPEED' => __( 'Shutter speed', 'meow-lightbox' ),
+				'APERTURE' => __( 'Aperture', 'meow-lightbox' ),
+				'ISO' => __( 'ISO', 'meow-lightbox' ),
+				'DATE' => __( 'Date taken', 'meow-lightbox' ),
+				'KEYWORDS' => __( 'Keywords', 'meow-lightbox' ),
+				'COPYRIGHT' => __( 'Copyright', 'meow-lightbox' ),
+				'AUTHOR' => __( 'Author', 'meow-lightbox' ),
+			),
+		);
 	}
 
 	/*******************************************************************************

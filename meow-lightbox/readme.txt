@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, photoswipe, photography
 Donate link: https://www.patreon.com/meowapps
 Requires at least: 6.0
 Tested up to: 7.1
-Stable tag: 5.6.3
+Stable tag: 5.6.4
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -152,6 +152,14 @@ Yes! Use arrow keys to navigate, ESC to close, and keyboard shortcuts for all co
 Meow Lightbox works great with translation plugins and multilingual setups.
 
 == Changelog ==
+
+= 5.6.4 (2026/10/26) =
+* Add: Location metadata, showing the place of the photo in the lightbox, with a toggle in the Metadata settings.
+* Add: New Meow Apps dashboard with Health, Errors and About tabs, and a header row with the version in the settings.
+* Update: Image blocks are now part of the default selectors.
+* Update: New installs now default to OpenStreetMap for the location map, labelled as suited for light traffic. Existing map settings are kept.
+* Fix: Private and draft images are no longer returned by the lightbox data endpoint.
+* Fix: Broken links in the Go Pro sentence.
 
 = 5.6.3 (2026/10/10) =
 * Fix: Security: Crafted comment text could inject script through the page parser.

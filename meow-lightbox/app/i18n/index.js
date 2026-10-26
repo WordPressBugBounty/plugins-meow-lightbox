@@ -41,6 +41,7 @@ const i18n = {
     KEYWORDS: 'Keywords',
     COPYRIGHT: 'Copyright',
     AUTHOR: 'Author',
+    LOCATION: 'Location',
   },
 
 };

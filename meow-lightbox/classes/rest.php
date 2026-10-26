@@ -133,6 +133,12 @@ class Meow_MWL_Rest
 					}
 				}
 
+				// This route is public: never reveal media a visitor couldn't see (cached entries included).
+				if ( !$this->core->is_media_viewable( $id ) ) {
+					$data[] = [ 'url' => $req_url, 'id' => $id, 'data' => [ 'success' => false, 'message' => 'Not available.' ] ];
+					continue;
+				}
+
 				// If the data is valid, record the rendered URL so future page loads can
 				// resolve this image locally (via mwl_url_index) without any REST call.
 				if ( is_array( $raw ) && isset( $raw['success'] ) && $raw['success'] !== false ) {

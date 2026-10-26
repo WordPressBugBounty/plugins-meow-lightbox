@@ -105,14 +105,15 @@ class Meow_MWL_Admin extends MeowKit_MWL_Admin {
 	function enqueue_scripts() {
 
 		// Load the "vendor" scripts
-		$physical_file = MWL_PATH . '/app/admin.js';
-		$cache_buster = file_exists( $physical_file ) ? filemtime( $physical_file ) : MWL_VERSION;
+		// Both bundles share one version, so it follows whichever changed last: a change that only
+		// touches the vendor bundle (NekoUI) would otherwise keep its old copy in the browser cache.
+		$bundles = array_filter( array( MWL_PATH . '/app/admin.js', MWL_PATH . '/app/vendor.js' ), 'file_exists' );
+		$cache_buster = $bundles ? max( array_map( 'filemtime', $bundles ) ) : MWL_VERSION;
 		wp_register_script( 'mwl-admin-js-vendor', MWL_URL . '/app/vendor.js',
 			['wp-editor', 'wp-element', 'wp-i18n'], $cache_buster
 		);
 
 		// Load the "admin" scripts
-		$physical_file = MWL_PATH . '/app/admin.js';
 		wp_register_script( 'mwl-admin-js', MWL_URL . '/app/admin.js', array( 'mwl-admin-js-vendor' ), $cache_buster );
 
 		// Load the fonts
@@ -130,6 +131,8 @@ class Meow_MWL_Admin extends MeowKit_MWL_Admin {
 			'domain' => MWL_DOMAIN,
 			'rest_nonce' => wp_create_nonce( 'wp_rest' ),
 			'is_pro' => class_exists( 'MeowPro_MWL_Core' ),
+			// Installed vs latest version for the header line (common/premium/renewal.php).
+			'version_info' => apply_filters( MWL_PREFIX . '_meowapps_version_info', null ),
 			'is_registered' => !!$this->is_registered(),
 			'options' => $this->core->get_all_options(),
 		] ) );

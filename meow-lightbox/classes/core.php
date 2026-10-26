@@ -211,6 +211,7 @@ class Meow_MWL_Core {
 						'author' => $this->get_option( 'exif_author', false ),
 						'iso' => $this->get_option( 'exif_iso', true ),
 						'keywords' => $this->get_option( 'exif_keywords', false ),
+						'location' => $this->get_option( 'exif_location', false ),
 						'metadata_toggle' => $this->get_option( 'metadata_toggle', false ),
 						'metadata_toggle_start_hidden' => $this->get_option( 'metadata_toggle_start_hidden', false ),
 					),
@@ -275,6 +276,7 @@ class Meow_MWL_Core {
 				'KEYWORDS' => __( 'Keywords', 'meow-lightbox' ),
 				'COPYRIGHT' => __( 'Copyright', 'meow-lightbox' ),
 				'AUTHOR' => __( 'Author', 'meow-lightbox' ),
+				'LOCATION' => __( 'Location', 'meow-lightbox' ),
 			),
 		);
 	}
@@ -384,6 +386,19 @@ class Meow_MWL_Core {
 		return get_post_type( $id ) === 'attachment';
 	}
 
+	// Whether a visitor may see this media's details (title, caption, file URL, EXIF): the same rule as
+	// WordPress' own /wp/v2/media, so images of private or draft posts stay private (reported 2026-10-25).
+	function is_media_viewable( $id ) {
+		if ( !$this->is_valid_attachment_id( $id ) ) {
+			return false;
+		}
+		if ( current_user_can( 'read_post', $id ) ) {
+			return true;
+		}
+		$parent = wp_get_post_parent_id( $id );
+		return !$parent || is_post_publicly_viewable( $parent );
+	}
+
 	function get_exif_info( $id, $apply_filters = true ) {
 		// Validate attachment ID first
 		if ( !$this->is_valid_attachment_id( $id ) ) {
@@ -397,7 +412,8 @@ class Meow_MWL_Core {
 		// has an influence on the process that follows
 		if ( !$this->disableCache ) {
 			$transient_name = 'mwl_exif_v2_' . $id . '_' . ( $this->get_option( 'map', false ) ? 'O' : 'X' ) .
-				( $this->get_option( 'exif_lens', false ) ? 'O' : 'X' ) . ( $this->imageSize === 'srcset' ? '' : ( '_' . $this->imageSize ) );
+				( $this->get_option( 'exif_lens', false ) ? 'O' : 'X' ) .
+				( $this->get_option( 'exif_location', false ) ? 'O' : 'X' ) . ( $this->imageSize === 'srcset' ? '' : ( '_' . $this->imageSize ) );
 			$info = get_transient( $transient_name );
 
 			if ( is_array( $info ) && !empty( $info['data']['gps'] ) && $info['data']['gps'] !== 'N/A' && $this->get_option( 'map', false ) ) {
@@ -611,6 +627,8 @@ class Meow_MWL_Core {
 		$lense  = $displayLens ? $meta['image_meta']['lens'] : '';
 		$lense  = str_replace( $camera, '', $lense );
 
+		$location = $this->get_option( 'exif_location', false ) ? Meow_MWL_Exif::get_location( $id, $meta ) : '';
+
 		$keywords = $meta['image_meta']['keywords'];
 		$keywords = is_array( $keywords ) ? implode( ', ', $keywords ) : $keywords;
 
@@ -649,6 +667,7 @@ class Meow_MWL_Core {
 				'iso' => $meta['image_meta']['iso'],
 				'shutter_speed' => $meta['image_meta']['shutter_speed'],
 				'keywords' => $keywords,
+				'location' => $location,
 			)
 		);
 
@@ -692,6 +711,7 @@ class Meow_MWL_Core {
 		$data['iso'] = apply_filters( 'mwl_img_iso', $data['iso'], $id, $meta );
 		$data['shutter_speed'] = apply_filters( 'mwl_img_shutter_speed', $data['shutter_speed'], $id, $meta );
 		$data['keywords'] = apply_filters( 'mwl_img_keywords', $data['keywords'], $id, $meta );
+		$data['location'] = apply_filters( 'mwl_img_location', isset( $data['location'] ) ? $data['location'] : '', $id, $meta );
 		$info['data'] = $data;
 
 		return $info;
@@ -1209,7 +1229,7 @@ class Meow_MWL_Core {
 	 * Get the CSS selectors for finding lightbox elements.
 	 */
 	private function get_selectors() {
-		$selectors = $this->get_option( 'selector', '.entry-content, .gallery, .mgl-root, .wp-block-gallery' );
+		$selectors = $this->get_option( 'selector', '.entry-content, .gallery, .mgl-root, .wp-block-gallery, .wp-block-image' );
 		$selectors = explode( ',', $selectors );
 		$selectors = array_map( 'trim', $selectors );
 
@@ -1389,6 +1409,7 @@ class Meow_MWL_Core {
 			'exif_time' => false,
 			'exif_date_timezone' => false,
 			'exif_keywords' => false,
+			'exif_location' => false,
 			'metadata_toggle' => false,
 			'metadata_toggle_start_hidden' => false,
 			'caption_origin' => 'caption',
@@ -1416,7 +1437,8 @@ class Meow_MWL_Core {
 			'selector_ahead' => false,
 			'selector' => '.entry-content, .gallery, .mgl-root, .wp-block-gallery,  .wp-block-image',
 			'anti_selector' => '.blog, .archive, .emoji, .attachment-post-image, .no-lightbox',
-			'map_engine' => 'googlemaps',
+			// Only used when the option is absent (fresh installs): Google Maps errors without a token.
+			'map_engine' => 'openstreetmap',
 			'googlemaps_token' => '',
 			'googlemaps_style' => '[]',
 			'googlemaps_map_type' => 'satellite',

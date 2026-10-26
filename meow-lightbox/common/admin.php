@@ -160,7 +160,7 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
 
         // Promote AI Engine on the WordPress 7 Connectors page when AI Engine
         // itself isn't installed. When AI Engine is active, its own banner
-        // takes over — so this path only runs on "bare" Meow Apps installs.
+        // takes over, so this path only runs on "bare" Meow Apps installs.
         add_action( 'admin_enqueue_scripts', [ $this, 'maybe_render_wpai_promo' ] );
 
         MeowKit_MWL_Admin::$loaded = true;
@@ -169,6 +169,12 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
       // PER-INSTANCE SETUP: Run for each plugin that uses this library
       // Only admins get ratings prompts and news
       if ( $this->is_user_admin() ) {
+        // Each plugin adds its own row to the dashboard's plugin table. The filter name is shared on
+        // purpose (not prefixed): whichever plugin renders the dashboard collects every installed one.
+        add_filter( 'meowapps_plugins_status', [ $this, 'status_row' ] );
+        // The site facts the Health tab explains, printed by the first up-to-date copy of this library
+        // to get there: the copy that owns the page may be an older one that doesn't know them yet.
+        add_action( 'admin_footer', [ $this, 'print_site_facts' ] );
         if ( !$this->disableReview ) {
           new MeowKit_MWL_Ratings( $this->prefix, $this->mainfile, $this->domain );
         }
@@ -203,6 +209,10 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
         return $links;
       }
       $isIssue = $this->isPro && !$this->is_registered();
+      // A Pro buyer who installed the plugin but never typed a key is not an issue yet: the red
+      // "License Issue" made fresh buyers think the purchase was broken (wave 2 audit, 2026-10-21).
+      $neverActivated = $isIssue && empty( get_option( $this->prefix . '_pro_serial', '' ) )
+        && empty( get_option( $this->prefix . '_license', '' ) );
 
       // The licenser already knows WHY validation failed and stores it as
       // license['issue'] (licenser.php), but this badge used to render a flat
@@ -270,7 +280,7 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
           else {
             // Free plugin
             $new_links = [
-              'license' => sprintf( '<span>' . __( '<a target="_blank" href="https://meowapps.com">Get the <u>Pro Version</u></a>', $this->domain ), $this->prefix ) . '</span>',
+              'license' => '<span>' . sprintf( __( '<a target="_blank" href="%s">Get the <u>Pro Version</u></a>', $this->domain ), esc_url( $this->pro_url( 'plugins-list' ) ) ) . '</span>',
             ];
           }
         }
@@ -282,7 +292,8 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
             'license' =>
             $this->is_registered() ?
               ( '<span style="color: #a75bd6;">' . __( 'Pro Version', $this->domain ) . '</span>' ) :
-                  ( $isIssue ? ( '<span style="color: #ff3434;">' . esc_html( $issueLabel ) . '</span>' ) : ( sprintf( '<span>' . __( '<a target="_blank" href="https://meowapps.com">Get the <u>Pro Version</u></a>', $this->domain ), $this->prefix ) . '</span>' ) ),
+                  ( $neverActivated ? sprintf( '<a href="%s">%s</a>', esc_url( admin_url( 'admin.php?page=' . $this->prefix . '_settings' ) ), esc_html__( 'Activate your license', $this->domain ) ) :
+                  ( $isIssue ? ( '<span style="color: #ff3434;">' . esc_html( $issueLabel ) . '</span>' ) : ( '<span>' . sprintf( __( '<a target="_blank" href="%s">Get the <u>Pro Version</u></a>', $this->domain ), esc_url( $this->pro_url( 'plugins-list' ) ) ) . '</span>' ) ) ),
           ];
         }
         $links = array_merge( $new_links, $links );
@@ -432,6 +443,20 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
       return get_option( 'force_sslverify', false );
     }
 
+    /**
+     * Tagged link to the store, so a click on "Get the Pro Version" shows up in the sale's
+     * attribution (utm_* are saved on each order) instead of arriving as an anonymous visit.
+     */
+    public function pro_url( $medium ) {
+      $slug = basename( dirname( $this->mainfile ) );
+      $slug = preg_replace( '/-pro$/', '', $slug );
+      return add_query_arg( [
+        'utm_source'   => $slug,
+        'utm_medium'   => $medium,
+        'utm_campaign' => 'get-pro',
+      ], 'https://meowapps.com/' );
+    }
+
     public function nice_name_from_file( $file ) {
       $info = pathinfo( $file );
       if ( !empty( $info ) ) {
@@ -453,10 +478,18 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
         delete_option( $this->prefix . '_license' );
         return;
       }
-      $html = '<div class="notice notice-error">';
+      // This notice was silently dead for a long time (no echo). Now that it prints, keep it to the
+      // plugins list and the plugin's own screens rather than every admin page.
+      $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+      $page   = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+      if ( !( ( $screen && $screen->id === 'plugins' ) || strpos( $page, $this->prefix ) === 0 ) ) {
+        return;
+      }
+      $html = '<div class="notice notice-warning">';
       $html .= sprintf(
-        __( '<p>It looks like you are using the free version of the plugin (<b>%s</b>) but a license for the Pro version was also found. The Pro version might have been replaced by the Free version during an update (might be caused by a temporarily issue). If it is the case, <b>please download it again</b> from the <a target="_blank" href="https://meowapps.com">Meow Store</a>. If you wish to continue using the free version and clear this message, click on this button.', $this->domain ),
-        $this->nice_name_from_file( $this->mainfile )
+        __( '<p>You are using the free version of <b>%1$s</b>, but a Pro license was found on this site. The Pro version was probably replaced by the free one during an update. <b>Download Pro again</b> from <a target="_blank" href="%2$s">your account at Meow Apps</a>: your license stays valid. If you prefer to keep the free version, click this button to clear this message.', $this->domain ),
+        $this->nice_name_from_file( $this->mainfile ),
+        esc_url( 'https://meowapps.com/account/' )
       );
       $html .= '<p>
                                                                                                                                                   <form method="post" action="">
@@ -466,7 +499,11 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
                                                                                                                                                     </form>
                                                                                                                                                     </p>';
       $html .= '</div>';
-      wp_kses_post( $html );
+      echo wp_kses( $html, [
+        'div' => [ 'class' => [] ], 'p' => [], 'b' => [], 'a' => [ 'href' => [], 'target' => [] ],
+        'form' => [ 'method' => [], 'action' => [] ],
+        'input' => [ 'type' => [], 'name' => [], 'value' => [], 'id' => [], 'class' => [] ],
+      ] );
     }
 
     public function admin_menu_start() {
@@ -479,7 +516,7 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
 
       // Create standard menu if it does not already exist.
       // The cat logo is injected as an <img> inside the menu title (rather than passed as
-      // the $icon_url argument) so the original SVG fills are preserved — passing it via
+      // the $icon_url argument) so the original SVG fills are preserved; passing it via
       // $icon_url makes WordPress add the .svg class and the admin color scheme strips
       // the colors to a single fill.
       global $submenu;
@@ -510,7 +547,7 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
       // put it) so the <img> renders with its native SVG fills. When the sidebar
       // is collapsed, WP hides .wp-menu-name (and everything inside it), so a
       // small JS snippet below clones the same <img> into the .wp-menu-image
-      // slot — which WP keeps visible in both states. We use a real <img>
+      // slot, which WP keeps visible in both states. We use a real <img>
       // (not a background-image) on purpose: at small sizes WP's admin renders
       // background-image SVGs noticeably lighter than the equivalent <img>,
       // and we want the colored cat in both states.
@@ -568,6 +605,166 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
       ob_end_clean();
       $html = preg_replace( '%^.*<body>(.*)</body>.*$%ms', '$1', $html );
       return $html;
+    }
+
+    /**
+    * This plugin's row for the dashboard: version, license, whether it is behind, and what the plugin
+    * itself reports through '<prefix>_meowapps_status' ([ 'metric' => [ 'value', 'label' ],
+    * 'todos' => [ [ 'text', 'severity' => 'error'|'warning'|'info', 'action' => [ 'label', 'url' ] ] ],
+    * optional 'state' => 'good'|'warning'|'bad' and 'note' => one short line ).
+    * Reads only cached data: nothing here may scan or call out, the dashboard has to open instantly.
+    */
+    public function status_row( $rows ) {
+      $basename = plugin_basename( $this->mainfile );
+      $slug = preg_replace( '/-pro$/', '', dirname( $basename ) );
+      // Free and Pro of the same plugin side by side (common on dev sites): Pro wins.
+      if ( isset( $rows[ $slug ] ) && !empty( $rows[ $slug ]['pro'] ) && !$this->isPro ) {
+        return $rows;
+      }
+      $data = get_file_data( $this->mainfile, [ 'name' => 'Plugin Name', 'version' => 'Version' ] );
+      $row = [
+        'slug' => $slug,
+        'name' => $data['name'],
+        'version' => $data['version'],
+        'pro' => (bool) $this->isPro,
+        'license' => null,
+        'latest' => null,
+        'behind' => false,
+        'action' => null,
+        'metric' => null,
+        'state' => null,
+        'note' => null,
+        'todos' => [],
+      ];
+      if ( $this->isPro ) {
+        $license = get_option( $this->prefix . '_license', '' );
+        if ( apply_filters( $this->prefix . '_meowapps_is_registered', false ) ) {
+          $row['license'] = 'active';
+        }
+        else {
+          $row['license'] = is_array( $license ) && !empty( $license['key'] ) ? 'inactive' : 'none';
+          // Same links as the renewal line on the Plugins page: a known key goes straight to the renewal
+          // checkout (EDD puts the right tier in the cart), otherwise to the product page.
+          $folder = dirname( $basename );
+          $utm = [ 'utm_source' => $folder, 'utm_medium' => 'dashboard-license' ];
+          $item_key = strtoupper( $this->prefix ) . '_ITEM_ID';
+          if ( $row['license'] === 'inactive' && defined( $item_key ) ) {
+            $row['license_action'] = [ 'label' => __( 'Renew', $this->domain ), 'external' => true,
+              'url' => add_query_arg( array_merge( [ 'edd_license_key' => $license['key'], 'download_id' => constant( $item_key ) ], $utm ),
+                'https://meowapps.com/checkout/' ) ];
+          }
+          else {
+            $row['license_action'] = [ 'label' => __( 'Get a license', $this->domain ), 'external' => true,
+              'url' => add_query_arg( $utm, 'https://meowapps.com/' . $slug . '/' ) ];
+          }
+        }
+      }
+      $info = apply_filters( $this->prefix . '_meowapps_version_info', null );
+      if ( is_array( $info ) && !empty( $info['latest'] ) ) {
+        $row['latest'] = $info['latest'];
+        $row['behind'] = !empty( $info['behind'] );
+        $row['action'] = isset( $info['action'] ) ? $info['action'] : null;
+      }
+      else {
+        // Free plugins: wordpress.org updates already land in WordPress's own update entry.
+        $updates = get_site_transient( 'update_plugins' );
+        $update = is_object( $updates ) && isset( $updates->response[ $basename ] ) ? $updates->response[ $basename ] : null;
+        if ( is_object( $update ) && !empty( $update->new_version ) && version_compare( $row['version'], $update->new_version, '<' ) ) {
+          $row['latest'] = (string) $update->new_version;
+          $row['behind'] = true;
+          $row['action'] = [ 'label' => __( 'Update', $this->domain ), 'url' => admin_url( 'plugins.php' ), 'external' => false ];
+        }
+      }
+      $extra = apply_filters( $this->prefix . '_meowapps_status', null );
+      if ( is_array( $extra ) ) {
+        if ( !empty( $extra['metric']['value'] ) ) {
+          $row['metric'] = [ 'value' => (string) $extra['metric']['value'],
+            'label' => isset( $extra['metric']['label'] ) ? (string) $extra['metric']['label'] : '' ];
+        }
+        // Optional: the card's color when the plugin knows better than its to-dos (good|warning|bad),
+        // and one short line for when there is nothing to do (Pro can say more than Free).
+        if ( isset( $extra['state'] ) && in_array( $extra['state'], [ 'good', 'warning', 'bad' ], true ) ) {
+          $row['state'] = $extra['state'];
+        }
+        if ( !empty( $extra['note'] ) ) {
+          $row['note'] = (string) $extra['note'];
+        }
+        if ( !empty( $extra['todos'] ) && is_array( $extra['todos'] ) ) {
+          foreach ( array_slice( $extra['todos'], 0, 3 ) as $todo ) {
+            if ( empty( $todo['text'] ) ) {
+              continue;
+            }
+            $row['todos'][] = [
+              'text' => (string) $todo['text'],
+              'severity' => isset( $todo['severity'] ) && in_array( $todo['severity'], [ 'error', 'warning' ], true ) ? $todo['severity'] : 'info',
+              'action' => isset( $todo['action']['url'] ) ? [ 'label' => (string) $todo['action']['label'], 'url' => (string) $todo['action']['url'] ] : null,
+            ];
+          }
+        }
+      }
+      $rows[ $slug ] = $row;
+      return $rows;
+    }
+
+    public function print_site_facts() {
+      $page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+      if ( $page !== 'meowapps-main-menu' || !empty( $GLOBALS['meowapps_site_facts_printed'] ) ) {
+        return;
+      }
+      $GLOBALS['meowapps_site_facts_printed'] = true;
+      echo '<script type="application/json" id="meow-common-site">' . wp_json_encode( $this->site_facts(), JSON_HEX_TAG | JSON_HEX_AMP ) . '</script>';
+      // The plugin rows too: the page itself is rendered by whichever copy registered the menu, often an
+      // older one during a rollout, so it cannot be trusted to print them.
+      $rows = apply_filters( 'meowapps_plugins_status', [] );
+      echo '<script type="application/json" id="meow-common-status">' . wp_json_encode( array_values( $rows ), JSON_HEX_TAG | JSON_HEX_AMP ) . '</script>';
+    }
+
+    public function site_facts() {
+      global $wpdb, $wp_version;
+      if ( !function_exists( 'get_plugins' ) ) {
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+      }
+      $all = get_plugins();
+      $active = [];
+      foreach ( (array) get_option( 'active_plugins', [] ) as $file ) {
+        if ( isset( $all[ $file ] ) ) {
+          $active[] = $all[ $file ]['Name'] . ' ' . $all[ $file ]['Version'];
+        }
+      }
+      $theme = wp_get_theme();
+      return [
+        'url' => home_url(),
+        'wordpress' => $wp_version,
+        'php' => PHP_VERSION,
+        'database' => method_exists( $wpdb, 'db_server_info' ) ? (string) $wpdb->db_server_info() : '',
+        'server' => isset( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) : '',
+        'memory_limit' => (string) ini_get( 'memory_limit' ),
+        'wp_memory_limit' => defined( 'WP_MEMORY_LIMIT' ) ? WP_MEMORY_LIMIT : '',
+        'max_execution_time' => (string) ini_get( 'max_execution_time' ),
+        'upload_max_filesize' => (string) ini_get( 'upload_max_filesize' ),
+        'post_max_size' => (string) ini_get( 'post_max_size' ),
+        'max_input_vars' => (string) ini_get( 'max_input_vars' ),
+        'https' => is_ssl(),
+        'multisite' => is_multisite(),
+        'debug' => defined( 'WP_DEBUG' ) && WP_DEBUG,
+        'debug_display' => defined( 'WP_DEBUG' ) && WP_DEBUG && ( !defined( 'WP_DEBUG_DISPLAY' ) || WP_DEBUG_DISPLAY ),
+        'object_cache' => (bool) wp_using_ext_object_cache(),
+        'cron_disabled' => defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON,
+        // Minutes the oldest scheduled task is overdue: a few is normal, hours means cron isn't running.
+        'cron_overdue' => $this->cron_overdue_minutes(),
+        'theme' => $theme->get( 'Name' ) . ' ' . $theme->get( 'Version' ),
+        'locale' => get_locale(),
+        'timezone' => wp_timezone_string(),
+        'plugins' => $active,
+      ];
+    }
+
+    private function cron_overdue_minutes() {
+      $crons = function_exists( '_get_cron_array' ) ? _get_cron_array() : [];
+      if ( !is_array( $crons ) || empty( $crons ) ) {
+        return 0;
+      }
+      return max( 0, (int) floor( ( time() - min( array_keys( $crons ) ) ) / 60 ) );
     }
 
     public function admin_meow_apps() {

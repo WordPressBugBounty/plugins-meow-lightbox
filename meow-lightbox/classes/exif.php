@@ -8,6 +8,7 @@ class Meow_MWL_Exif {
 	// description of the media, silently reverting the edits made by the user.
 	const GEO_META_KEY = '_mwl_geo';
 	const LENS_META_KEY = '_mwl_lens';
+	const LOCATION_META_KEY = '_mwl_location';
 
   static function gps2Num( $coordPart ) {
 		$parts = explode( '/', $coordPart );
@@ -94,6 +95,42 @@ class Meow_MWL_Exif {
 		}
 
 		return self::cache_gps_data( $id, $meta, $latitude . ',' . $longitude );
+	}
+
+	// Human-readable place: the IPTC City, State and Country embedded by Lightroom & co, or the
+	// GPS coordinates when the file has none. The IPTC part is cached like the lens ('' = none).
+	static function get_location( $id, &$meta ) {
+		if ( metadata_exists( 'post', $id, self::LOCATION_META_KEY ) ) {
+			$location = (string) get_post_meta( $id, self::LOCATION_META_KEY, true );
+		}
+		else {
+			$location = '';
+			$file = get_attached_file( $id );
+			if ( $file && file_exists( $file ) ) {
+				@getimagesize( $file, $info );
+				$iptc = !empty( $info['APP13'] ) ? @iptcparse( $info['APP13'] ) : false;
+				if ( $iptc ) {
+					$parts = array();
+					foreach ( array( '2#090', '2#095', '2#101' ) as $tag ) {
+						if ( !empty( $iptc[$tag][0] ) ) {
+							$parts[] = trim( $iptc[$tag][0] );
+						}
+					}
+					$location = implode( ', ', array_unique( array_filter( $parts ) ) );
+				}
+			}
+			update_post_meta( $id, self::LOCATION_META_KEY, $location );
+		}
+		if ( !empty( $location ) ) {
+			return $location;
+		}
+
+		$gps = self::get_gps_data( $id, $meta );
+		if ( empty( $gps ) ) {
+			return '';
+		}
+		$parts = explode( ',', $gps );
+		return count( $parts ) === 2 ? round( (float)$parts[0], 4 ) . ', ' . round( (float)$parts[1], 4 ) : '';
 	}
 
 }

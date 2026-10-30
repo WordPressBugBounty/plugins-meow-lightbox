@@ -4,8 +4,8 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
 
   class MeowKit_MWL_Admin {
     public static $loaded = false;
-    public static $version = '5.0';
-    public static $admin_version = '5.0';
+    public static $version = '5.1';
+    public static $admin_version = '5.1';
     public static $network_license_modal_added = false;
     public static $network_license_plugins = [];
 
@@ -44,6 +44,7 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
       $this->domain = $domain;
       $this->isPro = $isPro;
       $this->disableReview = $disableReview;
+      self::register_copy();
 
       if ( is_admin() ) {
 
@@ -76,6 +77,23 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
       // ALWAYS register these filters (they work at any time)
       add_filter( 'plugin_row_meta', [ $this, 'custom_plugin_row_meta' ], 10, 2 );
       add_filter( 'edd_sl_api_request_verify_ssl', [ $this, 'request_verify_ssl' ], 10, 0 );
+    }
+
+    /**
+     * Every plugin ships its own copy of this class (renamed per prefix), and they all share one Meow Apps
+     * menu. The newest copy owns it, whatever the plugin load order: copies note their version here, in a
+     * global every prefix can read, and only the one with the highest $admin_version (the first of them on
+     * a tie) builds the page. Older copies don't know this rule, see admin_menu_start() for the takeover.
+     */
+    private static function register_copy() {
+      $newest = isset( $GLOBALS['meowapps_admin_newest'] ) ? $GLOBALS['meowapps_admin_newest'] : null;
+      if ( !is_array( $newest ) || version_compare( self::$admin_version, $newest['version'], '>' ) ) {
+        $GLOBALS['meowapps_admin_newest'] = [ 'version' => self::$admin_version, 'class' => __CLASS__ ];
+      }
+    }
+
+    private static function is_newest_copy() {
+      return isset( $GLOBALS['meowapps_admin_newest']['class'] ) && $GLOBALS['meowapps_admin_newest']['class'] === __CLASS__;
     }
 
     /**
@@ -152,10 +170,10 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
         // Create the unified Meow Apps menu (priority 5 to ensure early creation)
         add_action( 'admin_menu', [ $this, 'admin_menu_start' ], 5 );
 
-        // Customize admin footer on Meow Apps pages
+        // Customize admin footer on Meow Apps pages (after the 100000 older copies use, so the newest wins)
         $page = isset( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : null;
         if ( $page === 'meowapps-main-menu' ) {
-          add_filter( 'admin_footer_text', [ $this, 'admin_footer_text' ], 100000, 1 );
+          add_filter( 'admin_footer_text', [ $this, 'admin_footer_text' ], 100001, 1 );
         }
 
         // Promote AI Engine on the WordPress 7 Connectors page when AI Engine
@@ -172,8 +190,7 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
         // Each plugin adds its own row to the dashboard's plugin table. The filter name is shared on
         // purpose (not prefixed): whichever plugin renders the dashboard collects every installed one.
         add_filter( 'meowapps_plugins_status', [ $this, 'status_row' ] );
-        // The site facts the Health tab explains, printed by the first up-to-date copy of this library
-        // to get there: the copy that owns the page may be an older one that doesn't know them yet.
+        // The site facts the Health tab explains, printed in the footer by the newest copy only.
         add_action( 'admin_footer', [ $this, 'print_site_facts' ] );
         if ( !$this->disableReview ) {
           new MeowKit_MWL_Ratings( $this->prefix, $this->mainfile, $this->domain );
@@ -507,6 +524,10 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
     }
 
     public function admin_menu_start() {
+      if ( !self::is_newest_copy() ) {
+        return;
+      }
+
       // Hide the admin if user doesn't like Meow much
       if ( get_option( 'meowapps_hide_meowapps', false ) ) {
         register_setting( 'general', 'meowapps_hide_meowapps', [ 'type' => 'boolean', 'sanitize_callback' => 'rest_sanitize_boolean' ] );
@@ -520,10 +541,14 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
       // $icon_url makes WordPress add the .svg class and the admin color scheme strips
       // the colors to a single fill.
       global $submenu;
-      if ( !isset( $submenu[ 'meowapps-main-menu' ] ) ) {
+      $title = '<img alt="Meow Apps" class="meowapps-menu-icon" src="' . MeowKit_MWL_Admin::$logo . '" />Meow Apps';
+      if ( isset( $submenu[ 'meowapps-main-menu' ] ) ) {
+        $this->take_over_menu( $title );
+      }
+      else {
         add_menu_page(
           'Meow Apps',
-          '<img alt="Meow Apps" class="meowapps-menu-icon" src="' . MeowKit_MWL_Admin::$logo . '" />Meow Apps',
+          $title,
           'manage_options',
           'meowapps-main-menu',
           [ $this, 'admin_meow_apps' ],
@@ -579,6 +604,31 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
           . '});';
         wp_add_inline_script( 'common', $js );
       } );
+    }
+
+    /**
+     * An older copy of this library (in another plugin, loaded first) already built the menu: it never
+     * defers to newer copies, so swap its page callback and title for ours.
+     */
+    private function take_over_menu( $title ) {
+      global $menu, $wp_filter;
+      $hook = 'toplevel_page_meowapps-main-menu';
+      if ( isset( $wp_filter[ $hook ] ) ) {
+        foreach ( $wp_filter[ $hook ]->callbacks as $priority => $callbacks ) {
+          foreach ( $callbacks as $callback ) {
+            $function = $callback['function'];
+            if ( is_array( $function ) && is_object( $function[0] ) && $function[1] === 'admin_meow_apps' ) {
+              remove_action( $hook, $function, $priority );
+            }
+          }
+        }
+      }
+      add_action( $hook, [ $this, 'admin_meow_apps' ] );
+      foreach ( (array) $menu as $index => $item ) {
+        if ( isset( $item[2] ) && $item[2] === 'meowapps-main-menu' ) {
+          $menu[ $index ][0] = $title;
+        }
+      }
     }
 
     public function meowapps_hide_dashboard_callback() {
@@ -708,7 +758,7 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
 
     public function print_site_facts() {
       $page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
-      if ( $page !== 'meowapps-main-menu' || !empty( $GLOBALS['meowapps_site_facts_printed'] ) ) {
+      if ( $page !== 'meowapps-main-menu' || !self::is_newest_copy() || !empty( $GLOBALS['meowapps_site_facts_printed'] ) ) {
         return;
       }
       $GLOBALS['meowapps_site_facts_printed'] = true;
@@ -777,6 +827,9 @@ if ( !class_exists( 'MeowKit_MWL_Admin' ) ) {
     }
 
     public function admin_footer_text( $current ) {
+      if ( !self::is_newest_copy() ) {
+        return $current;
+      }
       return sprintf(
         // translators: %1$s is the version of the interface; %2$s is a file path.
         __( 'Thanks for using <a href="https://meowapps.com">Meow Apps</a>! This is the Meow Admin %1$s <br /><i>Loaded from %2$s </i>', $this->domain ),

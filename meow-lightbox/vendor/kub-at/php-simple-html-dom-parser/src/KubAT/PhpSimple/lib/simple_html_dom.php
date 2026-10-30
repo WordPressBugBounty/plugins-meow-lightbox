@@ -494,6 +494,12 @@ class simple_html_dom_node
 					default: $quote = '';
 				}
 
+				// Meow Apps security patch: an unquoted value can never contain spaces, quotes or brackets.
+				if ($quote === '' && preg_match('/[\s"\'=<>`]/', $val)) {
+					$quote = '"';
+					$val = str_replace('"', '&quot;', $val);
+				}
+
 				$ret .= $key
 				. $this->_[HDOM_INFO_SPACE][$i][1]
 				. '='
@@ -2042,17 +2048,26 @@ class simple_html_dom
 
 				if ($this->lowercase) { $name = strtolower($name); }
 
+				// Meow Apps security patch (keep when updating this library): a duplicate attribute must not
+				// push quote or space info, otherwise makeup() shifts them and writes the next value unquoted,
+				// which turns text inside it (onload=...) into live attributes (stored XSS).
+				$is_duplicate = isset($node->attr[$name]);
+
 				if ($this->char === '=') { // attribute with value
 					$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
 					$this->parse_attr($node, $name, $space); // get attribute value
 				} else {
 					//no value attr: nowrap, checked selected...
-					$node->_[HDOM_INFO_QUOTE][] = HDOM_QUOTE_NO;
-					$node->attr[$name] = true;
+					if (!$is_duplicate) {
+						$node->_[HDOM_INFO_QUOTE][] = HDOM_QUOTE_NO;
+						$node->attr[$name] = true;
+					}
 					if ($this->char != '>') { $this->char = $this->doc[--$this->pos]; } // prev
 				}
 
-				$node->_[HDOM_INFO_SPACE][] = $space;
+				if (!$is_duplicate) {
+					$node->_[HDOM_INFO_SPACE][] = $space;
+				}
 
 				// prepare for next attribute
 				$space = array(

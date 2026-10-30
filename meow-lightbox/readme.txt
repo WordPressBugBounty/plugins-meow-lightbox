@@ -4,7 +4,7 @@ Tags: lightbox, responsive, exif, photoswipe, photography
 Donate link: https://www.patreon.com/meowapps
 Requires at least: 6.0
 Tested up to: 7.1
-Stable tag: 5.6.4
+Stable tag: 5.6.5
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -152,6 +152,9 @@ Yes! Use arrow keys to navigate, ESC to close, and keyboard shortcuts for all co
 Meow Lightbox works great with translation plugins and multilingual setups.
 
 == Changelog ==
+
+= 5.6.5 (2026/10/30) =
+* Fix: Security: Escape attribute values when the HTML parser rewrites a tag that has a duplicated attribute.
 
 = 5.6.4 (2026/10/26) =
 * Add: Location metadata, showing the place of the photo in the lightbox, with a toggle in the Metadata settings.
@@ -491,4 +494,9 @@ Meow Lightbox works great with translation plugins and multilingual setups.
 
 == Screenshots ==
 
-1. Lightbox displaying EXIF information
+
+1. Each photo opens big and sharp, with its camera, lens and exposure read straight from the EXIF.
+2. Light Glass is one of the built-in themes, for brighter sites.
+3. The Flat theme can show the details beside the photo instead of below it.
+4. Pick a theme and the details to show, with a live preview right in the settings.
+
